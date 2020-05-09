@@ -31,7 +31,7 @@ class Message_Passing:
 
         if self.sinc_Send:
             p = self.process_Manager.GetProcess(message.sender)
-
+            p.go = False
             while not p.go:
                 pass
 
@@ -47,7 +47,7 @@ class Message_Passing:
                 return None
 
             while message is None:
-                p = scan(sender)
+                p = self.scan(sender, reciver)
         
         if self.sinc_Send:
             self.process_Manager.GetProcess(sender).go = True
