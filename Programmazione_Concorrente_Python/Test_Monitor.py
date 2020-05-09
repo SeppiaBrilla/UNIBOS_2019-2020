@@ -16,9 +16,9 @@ def main():
     t2 = threading.Thread(target= process2, args = (p2,Monitor))
     t3 = threading.Thread(target= process3, args = (p3,Monitor))
 
+        t1.start()
     t2.start()
     t3.start()
-    t1.start()
 
 def process1(process, monitor):
     print("processo 1 start")
