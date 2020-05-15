@@ -27,6 +27,7 @@ monitor riempisvuota:
             ok2entry.signal();
         }
 
+yeyeyeyeyeyeyeyeyeeyeyedyeye
         
         entry esci(){
             if(numberOfCurrentProcess < Max){
