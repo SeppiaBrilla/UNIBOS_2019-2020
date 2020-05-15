@@ -1,0 +1,170 @@
+Esercizio c.1: 
+La struttura di sincronizzazione riempisvuota ha le seguenti caratteristiche:
+-) entrano MAX processi, e fino a che non è piena nessun processo può uscire
+-) i processi devono uscire in ordine inverso rispetto all'ordine di arrivo.
+Quando un processo vuole usare la struttura riempisvuota chiama la seguente funzione:    
+    def riempisvuotasynch():       
+        riempisvuota.entra(getpid())       
+        riempisvuola.esci(getpid())
+        
+Scrivere il monitor riempisvuota
+
+LIFO(input:p1->p2->p3, output:p3->p2->p1)
+
+monitor riempisvuota:
+    bool exit=false;
+    int numberOfCurrentProcess
+    int MAXprocess
+    condition ok2entry[MAX], ok2exit[MAX]
+    process proc[MAX]      
+        
+        entry entra (){
+            while( numberOfCurrentProcess > = MAX){
+                okToEntry.wait();
+            }
+            numberOfCurrentProcess ++;
+            stack.push(id);
+            ok2entry.signal();
+        }
+
+        
+        entry esci(){
+            if(numberOfCurrentProcess < Max){
+                okToExit[stack().top()].wait();
+            }
+            
+            okToExit[stack().pop()].signal();
+            numberOfCurrentProcess --;
+            if(numberOfCurrentProcess == 0){
+                oktokToEntry.signal()
+            }
+        }
+  
+
+
+Esercizio c.2: 
+In un sistema ci sono 26 processi server 
+proc['a'], proc['b'] .... proc['z'] 
+che usano message passing asincrono. 
+Ogni processo è l'unico che può stampare la propria lettera 
+ed esegue il seguente codice:   
+
+    proc[x]: x='a',...,'z'      
+        while True:         
+            (c, string) = arecv(*)         
+            print(x)         
+            if (len(string) > 1)            
+                asend(proc[string[0]], (x, string[1:]))
+
+e i clienti che vogliono stampare una stringa (non vuota) usano la funzione:   
+
+    def procstampa(s):      
+        asend(proc[s[0]], (None, s))
+
+Se un cliente alla volta chiama la procstampa il sistema produce il risultato voluto 
+ma se malauguratamente un cliente chiama la proc stampa mentre è in corso un'altra stampa 
+l'output delle due operazioni può mischiarsi 
+(se il primo cliente ha chiesto di stampare"ciao" e il secondo "mondo" l'output potrebbe essere "cmionadoo").
+
+Senza aggiungere ulteriori processi e senza modificare il codice eseguito dai clienti 
+correggere il codice dei server in modo che il programma concorrente funzioni correttamente in ogni caso 
+(nell'esempio precedente venga stampato prima "ciao" e poi "mondo", o viceversa, ma ogni stringa venga interamente stampata prima che inizi 
+la stampa della successiva).
+
+
+string aggiungi = "";
+isFirst True;
+proc[x]: x='a',...,'z'      
+    while True:         
+        (c, string) = arecv(*)         
+        if(c == None){
+            if(!isFirst){
+                aggiungi = aggiungi + string;
+                return;
+            }
+            isFirst = false;
+        }else{
+            string + = aggiungi;
+            aggiungi = "";
+        }
+        
+        print(x)         
+        if (len(string) > 1)            
+            asend(proc[string[0]], (x, string[1:]))
+        else
+            isFirst=true;
+        
+
+
+string aggiungi = "";
+isFirst True;
+proc[x]: x='a',...,'z'      
+    while True:         
+        (c, string) = arecv(*)         
+        if(c == None){
+            aggiungi = aggiungi + string;
+            if(!isFirst){
+                return;
+            }
+            isFirst = false;
+        }
+        
+        print(x)         
+        aggiungi = aggiungi[1:]
+        if (len(aggiungi) > 1)            
+            asend(proc[aggiungi[0]], (x, ""))
+        else
+            isFirst=true;
+
+
+
+Esercizio g.1
+Ci siano in un sistema due processi P1 e P2 identici che iniziano contemporaneamente. 
+Entrambi i processi computano per 4 ms, fanno I/O per 2 ms e poi elaborano nuovamente per 4 ms. 
+L'I/O dei due processi avviene sulla stessa unita' con accesso FIFO. 
+Il sistema usa uno scheduler di tipo round robin. 
+Calcolare lo schedule per ogni scelta della lunghezza del quanto di tempo e quale sia la scelta (o siano le scelte) migliori. 
+E quale è il limite massimo di durata dello schedule (considerando il time slice come numero reale positivo)?
+
+p1 = 4+2+4
+p2 = 4+2+4
+
+
+0 - ready
+1 - esecuzione
+2 - waiting
+
+   ms = 1
+   01234567890123456
+p1 10101012210101010
+p2 01010101221010101
+
+   ms = 2
+   0123456789012345
+p1 1100112211001100
+p2 0011001122110011
+
+   ms = 3
+   01234567890123456
+p1 11100012211100010
+p2 00011101220011101
+
+   ms = 4
+   0123456789012345
+p1 1111220011110000
+p2 0000111122001111
+
+   ms = 8
+   0123456789012345
+p1 1111220011110000
+p2 0000111122001111
+
+Esercizio g.2: 
+Rispondere alle domande seguenti:
+a) A cosa serve e quando viene eseguito un algoritmo di rimpiazzamento?
+b) Come si calcola la lunghezza massima di un file che si può memorizzare su un file system di tipo ext2?
+c) A cosa serve il meccanismo del sale (salt) nella memorizzazione delle password criptate? 
+    E se il salt funziona, perché le password criptate in Linux vengono memorizzate nel file "/etc/shadow" e non in "/etc/passwd"?
+d) Cosa occorre fare per evitare il deadlock quando lo stato calcolato dall'algoritmo del banchiere risulta unsafe?
+
+ALGORITMO DELLO STRUZZO

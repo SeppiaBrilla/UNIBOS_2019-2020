@@ -1,5 +1,7 @@
 import Process 
 
+#
+
 
 class Message:
     def __init__(self, message, sender, reciver):
@@ -8,7 +10,7 @@ class Message:
         self.receiver = reciver
 
     def __str__(self):
-        return 'messaggio inviato da: '+ str(self.message) + ' per: '+ str(self.receiver) + ' con testo: '+ self.message
+        return 'messaggio inviato da: '+ str(self.sender) + ' per: '+ str(self.receiver) + ' con testo: '+ self.message
 
 
 
