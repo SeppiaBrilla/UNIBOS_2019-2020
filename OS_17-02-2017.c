@@ -1,7 +1,8 @@
 /*Scrivere un programma ager in grado di invecchiare file.
 Il programma deve poter prendere una lista di file come parametri o nessun parametro, 
-nel qual caso invecchieràtutti I file della directory corrente. 
-“invecchiare” significa predatare il tempo di ultimo accesso e di modifica di 10giorni.Esempio:
+nel qual caso invecchierà tutti I file della directory corrente. 
+“invecchiare” significa predatare il tempo di ultimo accesso e di modifica di 10 giorni.Esempio:
+
 $ ls -l file-rw-r--r-- 
 1 renzo renzo    0 Feb 17 09:07 file
 $ ./ager file
@@ -25,6 +26,22 @@ Si possono inserire altri parametri ritenuti opportuni
 #include <sys/dir.h>
 #include <string.h>
 
+/*
+peppo
+Usr/include/peppo
+
+struct utimbuf {
+    time_t actime;      
+    time_t modtime;    
+}
+
+struct stat {
+	struct timespec	st_atim;
+	struct timespec	st_mtim;
+};
+
+
+*/
 int main(int argc, char const *argv[])
 {
     char *command[200];
@@ -60,6 +77,7 @@ int main(int argc, char const *argv[])
         }
         else
         {
+            modif = 10;
             a = m = 1;
         }
         if (argc > 2)
@@ -71,6 +89,7 @@ int main(int argc, char const *argv[])
             }
         }
     }
+    
     if (argument < 2)
     {
         DIR *dir;
