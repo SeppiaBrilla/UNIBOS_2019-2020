@@ -29,48 +29,50 @@ static int contatore = 0;
 int main(int argc, char const *argv[])
 {
     sigset_t mask;
-    ssize_t c;
-    struct signalfd_siginfo inserimento;
     int error, sfd;
 
     FILE *f = fopen("./countpid", "w");
     fprintf(f, "%d \n", getpid());
     fclose(f);
 
-    sigemptyset(&mask);
+    sigemptyset(&mask); 
     sigaddset(&mask, SIGUSR1);
     sigaddset(&mask, SIGUSR2);
 
-    if(sigprocmask(SIG_BLOCK, &mask, NULL) < 0){
+    //Copiate da te
+    if(sigprocmask(SIG_BLOCK, &mask, NULL) == -1){
 		perror ("sigprocmask");
 		return 1;
 	}
     
     sfd = signalfd(-1, &mask, 0);
-    if (sfd < 0) {
+    if (sfd == -1) {
 		perror ("signalfd");
 		return 1;
 	}
 
-
     for (;;)
     {
-        c = read(&mask, &inserimento, sizeof(struct signalfd_siginfo));
-        if (c != sizeof(struct signalfd_siginfo)){
-            perror("read");
-            return 1;
-        }
+        ssize_t c;
+        struct signalfd_siginfo inserimento;
+        c = read(sfd, &inserimento, sizeof(struct signalfd_siginfo));
+        if (c < 0) {
+			perror ("read");
+			return 1;
+		}
+		if (c != sizeof(inserimento)) {
+			fprintf (stderr, "Something wrong\n");
+			return 1;
+		}
 
         if (inserimento.ssi_signo == SIGUSR1){
             contatore++;
-            break;
+            printf("%d \n", contatore);
         }
-        if (inserimento.ssi_signo == SIGUSR2){  
+        if (inserimento.ssi_signo == SIGUSR2){ 
             contatore--;
-            break;
+            printf("%d \n", contatore);
         }
-
     }
-    printf("%d \n", contatore);
     return 0;
 }
