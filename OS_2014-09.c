@@ -35,7 +35,7 @@ int execv(const char *path, char *const argv[]);
 
 int main(int argc, char const *argv[])
 {
-   
+   https://github.com/rd235/s2argv-execs
     //execv(./test)
     FILE * commands = fopen(argv[1], "r");
     char * line;

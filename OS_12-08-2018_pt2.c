@@ -16,8 +16,7 @@ int main(int argc, char * argv[]){
         strcat(command, argv[i]);
     }
 
-    
-    FILE * fp  = fopen ("/tmp/countpid", "r");
+    FILE * fp  = fopen ("./countpid", "r");
     if(fgets(pid, 6, fp)!= NULL)
         printf("ciao");
     fclose(fp);
