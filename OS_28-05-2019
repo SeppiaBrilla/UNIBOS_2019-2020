@@ -1,0 +1,91 @@
+c1.
+Scopo dell'esercizio è di scrivere un monitor storage per la gestione del magazzino (un vettore di 16 interi).
+
+Ogni volta che un magazziere riceve un carico di componenti dal formitori chiama la funzione:     
+    storage.add(components) 
+dove components è un vettore di 16 elementi, indica quanti componenti di ogni tipo vengono aggiunti al magazzino.
+
+Quando un operaio deve costruire un prodotto chiama:     
+    storage.get(components)
+
+dove components è un vettore di 16 elementi: indica quanti componenti di ogni tipo sono necessari per costruire il prodotto richiesto.
+Ovviamente se manca qualche componente occorre aspettare che i magazzinieri ricevano e mettano nel magazzino le parti mancanti.
+Le richieste degli operai devono essere soddisfatte in ordine FIFO.
+Ci possono essere casi di Deadlock? e di Starvation? perché?
+
+monitor storage:
+
+components[16] #magazzino
+condition okToGet
+
+
+
+storage.add(components):
+    for component in components:
+        self.components[component] += components[component]
+        if self.components[component] > 0:
+            okToGet[component].signal()
+
+
+storage.get(components):
+    for component in components:
+        while components[component] > 0:
+            prendo = min(components[component], self.components[component])
+            components[component] -= prendo
+            self.components[component] -= prendo
+            if(components[component] > 0):
+                okToGet[component].wait()
+            if self.components[component] > 0:
+                okToGet[component].signal()
+    
+
+c2.
+semaphore okToExit[0]
+
+SAU_enter():
+    in++
+
+
+SAU_exit():
+    in--
+    if in > 0:
+        okToExit.P()
+    
+    okToExit.V()
+
+
+Esercizio g.1: 
+In un sistema vengono eseguiti due tipi di processo, 
+il tipo A richiede 3ms di calcolo e termina, 
+il tipo B richiede 4ms di calcolo e poi termina. 
+Processi di tipo A vengono attivati ogni 6 ms (cioe' al tempo 0, 6, 12, 18, 24, 30...)
+mentre processi di tipo B ogni 8ms (al tempo 0, 8, 16, 24, 32, 40....). 
+Ogni processo di tipo A deve completare l'esecuzione prima che inizi il successivo dello stesso tipo, 
+e in modo equivalente ogni processo di tipo B deveterminare prima che venga eseguito il successivo.
+a) è possibile eseguire i processi con uno scheduler non-preemptive a priorità con i processi di tipo B a maggiore priorità di quelli del tipo A.
+b) è possibile eseguire i processi con uno scheduler non-preemptive a priorità con i processi di tipo A a maggiore priorità di quelli del tipo B
+c) è possibile eseguire i processi con uno scheduler round robin con timeslice 2ms? (il primo a partire potrebbe esseredi tipo A o di tipo B).
+
+A 0 6 12 18 24 30 = 3ms = !
+B 0 8 16 24 32 40 = 4ms = "
+entrambi = ^
+
+a)^     ! "   !   " !     ^     ! "       " 
+    01234567890123456789012345678901234567890
+A   000011100001110000111000000001110000111
+B   111100011110001111000111111110001111000
+
+b)^     ! "   !   " !     ^     ! "       "
+    01234567890123456789012345678901234567890
+A   11100001110000111000011111100001110000
+B   00011110001111000111100000011110001111
+
+c.a)^     ! "   !   " !     ^     ! "       "
+    01234567890123456789012345678901234567890
+A   11001002200200330030044004
+B   001101100220220033033000400110011001100
+
+c.b)^     ! "   !   " !     ^     ! "       "
+    01234567890123456789012345678901234567890
+A   001100120
+B   1100110
