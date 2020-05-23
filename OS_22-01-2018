@@ -1,0 +1,128 @@
+c1.
+
+L'incrocio fra una strada e un canale è regolato da un ponte mobile come quello illustrato dall'apposito segnale.
+Ovviamente le auto possono attraversare il ponte solo se è abbassato e si può alzare il ponte se non ci sono auto che lo stanno attraversando.  
+Il ponte deve essere alzato per far passare le imbarcazioni.
+Il canale in corrispondenza del ponte ha una larghezza che consente il passaggio di una imbarcazione alla volta(indipendentemente dalla direzione di provenienza) 
+e le imbarcazioni in attesa di attraversare il ponte non possono superarsi a vicenda (l'ordine di accesso al canale sotto al ponte è FIFO).
+Le auto per attraversare il ponte usano il seguente protocollo:      
+ 
+    bridge.car_enter(direction)           
+        ... attraversa il ponte           
+    bridge.car_exit(direction)
+    
+Le imbarcazioni usano il protocollo:   
+        
+    bridge.boat_enter(direction)           
+        ... passa sotto al ponte           
+    bridge.boat_exit(direction)
+
+dove direction vale 0 o 1 per riconoscere le due diverse direzioni delle auto o delle imbarcazioni. 
+Occorre scrivere la soluzione in mododa evitare casi di starvation.
+
+
+monitor bridge:
+    alzato = falso
+    macchine = 0
+    barche = 0
+    ok2car
+    ok2boat 
+
+    entry car_enter(direction):
+        
+        
+        
+    entry car_exit(direction):
+        
+
+
+    entry boat_enter(direction):
+        
+
+
+    entry boat_exit(direction):
+           
+
+
+
+
+
+Esercizio c.2: 
+Facendo uso di semafori ordinari implementare semafori ternari che possano assumere valori -1, 0, +1.
+L'invariante dei semafori ternari di questo esercizio è:                             
+    nP - 1 <= nV + init <= nP + 1
+dove nP è il numero di operazioni P completate, nV il numero delle operazioni V completate e init è il valore iniziale del semaforo.
+
+def semaphore ternary:
+    int nP, int nV, int value;
+    condition
+    mutex 
+    
+    entry P():
+        mutex.p()
+
+        value --
+        if value < -1:
+            mutex.v()
+            condition.p()
+            nP++
+        else
+            mutex.v()
+    
+    entry V():
+        mutex.p()
+        if value < 1:
+            value ++
+            condition.V()
+            nV++
+        mutex.v()
+
+
+    costruttore(int init):
+        condition = semaphore(0)
+        mutex = semaphore(1)
+        value=init
+
+
+Esercizio g.1: 
+Considerare i seguenti processi gestiti mediante uno scheduler round robin   con timeslice di 4ms su una macchina SMP:
+P1: cpu 5 ms; I-O 4 ms; cpu 2 ms
+P2: cpu 2 ms; I-O 4 ms; cpu 2 ms    
+P3: cpu 3 ms; I-O 3 ms; cpu 3 ms    
+P4: cpu 10 ms; I-O 1 ms 
+l'Input-Output avviene su un'unica unita'. 
+Calcolare il tempo necessario a completare l'esecuzione dei 4 processi al variare del numero di processori presenti nel sistema.
+
+1CPU
+      1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8
+cpu0  1 1 1 1 2 2 3 3 3 4 4 4 4 1 2 2 3 3 3 4 4 4 4 1 1 4 4 0
+i/o   0 0 0 0 0 0 2 2 2 2 3 3 3 0 1 1 1 1 0 0 0 0 0 0 0 0 0 4
+
+
+2CPU
+     1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+cpu0 1 1 1 1 4 4 4 4 4 4 4 4 4 4 0
+cpu1 2 2 3 3 3 1 2 2 0 1 1 0 0 0 0
+i/o  0 0 2 2 3 3 3 1 1 0 0 0 0 0 4
+
+3CPU
+      1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7
+cpu0  1 1 1 1 1 0 2 2 0 3 3 3 0 1 1
+cpu1  2 2 4 4 4 4 4 4 4 4 4 4 0 0 0
+cpu2  3 3 3 0 0 0 0 0 0 0 0 0 0 0 0
+i/o   0 0 2 2 2 2 3 3 3 1 1 1 1 4 0
+
+4CPU
+     1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+cpu0 1 1 1 1 4 4 4 4 0 3 3 3 0 1 1
+cpu1 2 2 0 0 0 0 2 2 0 0 0 0 0 0 0
+cpu2 3 3 3 0 0 0 0 0 4 4 0 0 0 0 0 
+cpu3 4 4 4 4 1 0 0 0 0 0 0 0 0 0 0
+i/o  0 0 2 2 2 2 3 3 3 1 1 1 1 4 0
+
+Esercizio g.2: 
+Rispondere alle domande seguenti:
+a) A cosa serve partizionare un disco? Fornire esempi pratici di uso di dischi partizionati.
+b) Quale è la differenza fra TLB miss e page fault nella gestione della memoria virtuale?
+c) Fornire esempi di file system con allocazione contigua, e spiegare perché sarebbe inefficiente usare altri metodi di allocazione neicasi d'uso tipici di questi file system.
+d) Come funziona la tecnica denominata aging e come riesce ad evitare la starvation negli scheduler a priorità?
