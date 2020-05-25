@@ -1,0 +1,26 @@
+a) Sia data la seguente stringa di riferimenti: 012345012340123012010.
+mostrare il comportamento degli algoritmi MIN e FIFO quando operano su una memoria di 4 frame.
+
+     012345012340123012010
+MIN  000000000000000000000
+      11111111111111111111
+       2222222222222222222
+        345555344443333333
+
+     012345012340123012010
+FIFO 000044442222111111111
+      11115555333322222222
+       2222000044443333333
+        333311110000000000
+
+b) Data una memoria di 4 frame contenente le pagine 0,1,2,3 rispettivamente nei frame 0,1,2,3. 
+   Mostrare una stringa di riferimenti di un programma che usi 5 pagine (esiste la pagina 4 non ancora mappata in memoria oltre alle 4 caricate nei frame) 
+   e che consenta alla fine dell'esecuzione di avere nel frame 0 la pagina 1, nel frame 1 la pagina 2, nel frame 2 la pagina 3 e nel frame 3 la pagina 4. 
+   L'algoritmo di rimpiazzamento da usare e' MIN.
+
+   01234012301420341234
+   00000000000000001111
+    1111111111122222222
+     222222333333333333
+      34444444444444444
+    

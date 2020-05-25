@@ -1,0 +1,119 @@
+Esercizio c.1: 
+Per raggiungere un'isola con l'autovettura occorre un traghetto. 
+Il traghetto di questo esercizio ha una sola rampa sulla quale può transitare una automobile alla volta.
+Il traghetto può imbarcare al massimo MAX automobili. 
+Il traghetto parte solo quando è completamente carico. 
+Occorre disimbarcare tutte le auto prima di imbarcare quelle che desiderano fare la traversata in senso contrario. 
+Le auto possono essere sbarcate in qualsiasi ordine purché una sola alla volta passi sulla rampa.
+Il processo traghetto è il seguente:   
+    traghetto: process:      
+        while True:          
+            tmon.al_porto(TERRAFERMA)          
+                ... naviga          
+            tmon.al_porto(ISOLA)          
+                ... naviga
+
+Mentre le auto per usare il traghetto chiamano uno dei due segmenti di codice:   
+
+    tmon.imbarca(TERRAFERMA)                       tmon.imbarca(ISOLA)
+    /* sulla rampa */                              /* sulla rampa */   
+    tmon.imbarcato(TERRAFERMA)                     tmon.imbarcato(ISOLA)
+    /* sulla nave */                               /* sulla nave */  
+    tmon.sbarca(ISOLA)                             tmon.sbarca(TERRAFERMA)
+    /* sulla rampa */                              /* sulla rampa */   
+    tmon.sbarcato(ISOLA)                           tmon.sbarcato(TERRAFERMA)
+
+    TERRAFERMA -> ISOLA                             ISOLA -> TERRAFERMA
+
+Scrivere il monitor tmon.
+
+monitor tmon:
+    int Max # MAX automobili
+    int CurrentCar #automobili correnti
+    condition imbarcare[2]
+    condition sbarcare[2]
+    bool rampaIsOccupied
+    condition rampa;
+
+    entry al_porto(porto):
+        
+        while CurrentCar > 0:            
+            sbarcare[porto].signal()
+
+        while CurrentCar < Max:            
+            imbarcare[porto].signal()
+
+    entry imbarca(porto):
+
+        imbarcare[porto].wait()
+        
+        if(rampaIsOccupied)
+            rampa[porto].wait()
+        rampaIsOccupied = True
+
+
+    entry imbarcato(porto):
+        
+        rampaIsOccupied = false
+        rampa[porto].Signal()
+        CurrentCar++
+
+
+    entry sbarca(porto):
+        
+        sbarcare[porto].wait()
+
+        if(rampaIsOccupied)
+            rampa[porto].wait()
+        rampaIsOccupied = True
+
+
+    entry sbarcato(porto):
+        
+        rampaIsOccupied = false
+        CurrentCar--
+        rampa[porto].Signal()
+
+
+Esercizio c.2: 
+Facendo uso di semafori ordinari implementare semafori a limite intero N che possano assumere valori -N, -N+1, ...,1, 0, 1, ..., N-1, N.
+
+L'invariante dei semafori a limite intero di questo esercizio è:                            
+     nP - N <= nV + init <= nP + N
+
+dove nP è il numero di operazioni P completate, nV il numero delle operazioni V completate e init è il valore iniziale del semaforo
+
+semaphore limit:
+    semaphore mutex(1)
+    semaphore normal(0);
+    int n
+    int current;
+
+    entry P()
+        mutex.P()
+        current--
+        if current < -n :  
+            mutex.V()
+            normal.P()
+        else:
+            mutex.V()
+        
+    entry V()
+        mutex.P()
+        current++
+        if current < n:
+            normal.V()
+            
+        mutex.V()
+
+Esercizio g.1: 
+Costruire uno stato di un banchiere a tre valute in modo che sia unsafe. 
+Questo stato deve essere tale che aggiungendo una istanza (una unita' di valuta) 
+di ogni valuta lo stato torni safe ma se si aggiungesse una unita' a solamente una o due valute rimarrebbe unsafe. 
+Ricordarsi che, per ogni valuta, il fido concesso ad ogni cliente deve essere minore o uguale della dotazione totale del banchiere.
+
+222
+   
+C1 222 111 111
+C2 444 111 333
+C3 666 111 444
