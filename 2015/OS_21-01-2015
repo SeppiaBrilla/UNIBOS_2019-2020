@@ -1,0 +1,66 @@
+Scrivere il monitor lwlrbb. Il monitor deve implementare le seguenti procedure entry:     
+    void write(generic_type val);     
+    
+    generic_type read(void);
+    
+Il lwlrbb si comporta come un bounded buffer di MAX elementi che coordina l'attivita' di numerosi processi produttori/scrittori e numerosi lettori/consumatori. 
+lwlrbb ammette un numero massimo (sempre MAX) di lettori e scrittori in attesa.
+Se il buffer e' vuoto e ci sono piu' gia' MAX lettori in attesa, il lettore che e' in attesa da piu' tempo esce resituendo NULL.
+In ugual modo se il buffer e' completamente pieno e ci sono gia' MAX scrittori che attendono di scrivere viene perduto il valore che da piu' tempo nel buffer attende 
+di venir letto, il primo processo in attesa di scrivere puo' cosi' scrivere il suo elemento nel buffer esbloccarsi.
+
+
+monitor lwlrbb:
+
+    condition write;
+    condition read;
+    int MAX
+    generic_type queue buffer[MAX]
+    int writer
+    int reader
+
+
+    void write(generic_type val):
+    
+        if buffer.is_full():
+
+            if writer < MAX:
+
+                writer++
+                write.wait()
+
+            else:
+
+                buffer.pop()
+                write.signal()
+                write.wait()
+            
+        writer--
+        buffer.append(val)
+
+        if reader > 0:
+
+            reader.signal() 
+
+    generic_type read():
+
+        if buffer.is_empty():
+
+            if reader < MAX:
+
+                reader++
+                read.wait()
+
+            else:
+
+                read.signal()
+                read.wait()
+        
+        reader--
+        return_val = buffer.pop()
+
+        if writer > 1:
+
+            writer. signal()
+
+        return return_val
