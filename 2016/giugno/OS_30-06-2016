@@ -1,0 +1,56 @@
+a) Sia data una memoria di 3 frame. 
+Trovate una stringa di riferimenti di lunghezza infinita tale che se confrontiamo FIFO e MIN, da un certo istante in poi il numero di page fault per FIFO sia almeno 
+doppio di quello di MIN. Dimostrate che la proprieta’ sia verificata.
+b) Trovate una stringa di riferimenti di lunghezza infinita tale che se confrontiamo FIFO e MIN, da un certo istante in poi il numero di page fault per FIFO sia 
+almeno triplo di quello di MIN. Dimostrate che la proprietà sia verificata. 
+c) (extra/hint) E’ possibile soddisfare b con una memoria di 3 frame? Perché?
+
+
+a)
+a)
+MIN  !  !  !  !  !
+  1234123412341234
+1 1111111112222224
+2  222223333333333
+3   34444444441111
+
+FIFO !!!!!!!!!!!!!
+  1234123412341234
+1 1114443332221114
+2  222111444333222
+3   33322211144433
+
+b)
+MIN  !  !  !  !  !  !
+  1234123412341234123
+1 1111111112222222222
+2  222223333333334443
+3   34444444441111111
+
+FIFO !!!!!!!!!!!!!!!!
+  1234123412341234123
+1 1114443332221114443
+2  222111444333222111
+3   33322211144433322
+
+
+MIN  |  |   |  |  |  |  |
+  12343211234321234321234
+1 11144411114441114441114
+2  2222222222222222222222
+3   333333333333333333333
+
+FIFO |  || || |  | |  |
+  1234321234321234321234
+1 1114444222222224444444
+2  222221111333333322222
+3   33333334441111111133
+
+
+
+Rispondere alle seguenti domande:
+1.A cosa serve il processo IDLE (che mette il processore in wait state se possibile o esegue un loop infinito)? Qua ndo viene messo in esecuzione? 
+Come si gestisce l’attivazione di IDLE negli scheduler a priorità e nel round-robin?
+2.Lo stato unsafe è condizione necessaria ma non sufficiente perché possa verificarsi deadlock. Quali sono I passi logici necessari per dimostrare questa affermazione?
+3.Quali metodi di allocazione per file system ammettono la creazione di file di grandezza arbitrario?
+4.Perché per utilizzare le capability come strumento di autorizzazione è sufficiente usare un metodo crittografico a singola chiave?

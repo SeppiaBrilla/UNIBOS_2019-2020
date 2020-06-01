@@ -1,0 +1,79 @@
+Considerare l’algoritmo di rimpiazzamento MAX che sceglie come pagina vittima quella presente in memoria che verra’ acceduta nel futuro piu’ prossimo (comportamento duale a quello di MIN).
+Quale utilita’ puo’ avere questo algoritmo? Costruire, se possibile, una stringa di riferimenti di lunghezza infinita 
+e che generi infiniti page fault usando un numero finito di pagine tale che FIFO, LRU e MAX si comportino esattamente nello stesso modo (spiegando il procedimento usato). 
+In caso la stringa non esista dimostrare che la costruzione e’ impossibile.
+
+3 Pagine
+MAX
+  123412341234
+1 111444333222
+2  22211144433
+3   3332221114
+
+FIFO
+  123412341234
+1 111444333222
+2  22211144433
+3   3332221114
+
+LRU
+  123412341234
+1 111444333222
+2  22211144433
+3   3332221114
+
+-----------------------------------------------------------------------
+
+4 Frame
+MAX
+  123451234512345
+1 111155554444333
+2  22221111555544
+3   3333222211115
+4    444433332222
+
+FIFO
+  123451234512345
+1 111155554444333
+2  22221111555544
+3   3333222211115
+4    444433332222
+
+LRU
+  123451234512345
+1 111155554444333
+2  22221111555544
+3   3333222211115
+4    444433332222
+
+
+Costruire, se possibile, una stringa di riferimenti di lunghezza infinita e che generi infiniti page fault 
+usando un numero finito di pagine tale che MIN e MAX si comportino esattamente nello stesso modo (spiegando il procedimento usato). 
+In caso la stringa non esista dimostrare che la costruzione e’ impossibile.
+
+MAX
+  1234321234321
+1 111
+2  22
+3   3
+
+MIN
+  14231423
+1 111
+2  44
+3   2
+
+
+
+123441
+
+
+Esercizio g.2:
+
+Cosa sono gli spinlock e quale ruolo hanno nell’implementazione di kernel per sistemi multiprocessore (in modalita’ simmetrica SMP).
+
+Cosa e’ il Translation Lookahead Buffer (TLB) presente nelle MMU moderne e quale e’ il ruolo del TLB nella gestione della memoria virtuale mediante paginazione a richiesta.
+
+Quale e’ la differenza fra una funzione di una libreria ed una system call? In altre parole, perche’ sono necessarie le system call?
+
+RAID1 consente di aumentare le prestazioni per le operazioni di lettura ma non per quelle di scrittura. E’ una affermazione vera o falsa? Perche’?
