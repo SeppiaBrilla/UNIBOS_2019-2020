@@ -26,38 +26,42 @@ int isDirectoryEmpty(char *dirname) {
     return 0;
 }
 
-int main(int argc, char * argv[]){
+int main(int argc, char *argv[])
+{
 
+  if (!isDirectoryEmpty(argv[1]))
+  {
+    printf("directory not empty!\n");
+    return 1;
+  }
+  const int event_size = sizeof(struct inotify_event);
+  const int buf_len = 1024 * (event_size + FILENAME_MAX);
+  int eventcount, count = 0;
+  struct inotify_event *event;
+  char buff[buf_len];
 
-    if(!isDirectoryEmpty(argv[1])){
-        printf("directory not empty!\n");
+  char command[100];
+  char commandbase[20];
+
+  strcpy(commandbase, argv[1]);
+  strcat(commandbase, "/");
+
+  int Inotify = inotify_init();
+  inotify_add_watch(Inotify, argv[1], IN_CREATE);
+  while (1)
+  {
+    eventcount = read(Inotify, buff, buf_len);
+    event = (struct inotify_event *)&buff[count];
+    if (event->mask & IN_CREATE)
+    {
+      printf("executing new file %s!\n", event->name);
+      strcpy(command, commandbase);
+      strcat(command, event->name);
+      system(command);
+      if (remove(command))
         return 1;
     }
-    const int event_size = sizeof(struct inotify_event);
-    const int buf_len = 1024 * (event_size + FILENAME_MAX);
-    int eventcount, count = 0;
-    char buff[buf_len];
-    char command[100];
-    char commandbase[20];
-    strcpy(commandbase, argv[1]);
-    strcat(commandbase, "/");
-    int Inotify = inotify_init();
-    inotify_add_watch(Inotify, argv[1], IN_CREATE);
-    struct inotify_event *event;
-    while(1){
-        eventcount = read( Inotify, buff, buf_len);
-        event = (struct inotify_event *)&buff[count];
-        if(event ->mask & IN_CREATE){
-            printf("executing new file %s!\n", event->name);
-            strcpy(command, commandbase);
-            strcat(command, event->name);
-            system(command);
-            if(remove(command))
-                return 1;
- 
-        }
-    }
+  }
 
-    return 0;
+  return 0;
 }
-

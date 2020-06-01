@@ -58,11 +58,11 @@ int main(int argc, char *argv[]){
     int counter = 0;
     int changes = -1;
     int user;
-    struct passwd *pwd = calloc(1, sizeof(struct passwd));
 
     if(argc < 2)
         return 1;
 
+    struct passwd *pwd = calloc(1, sizeof(struct passwd));
     if(pwd == NULL)
     {
         fprintf(stderr, "Failed to allocate struct passwd for getpwnam_r.\n");

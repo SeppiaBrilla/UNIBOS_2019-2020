@@ -37,7 +37,7 @@ int main(int argc, char * argv[]){
         nv.it_interval.tv_sec = 0;
         if(timerfd_settime(timer, 0, &nv, 0) < 0)
             return 1;
-        //read(timer,&buff,sizeof(uint64_t));
+
         struct pollfd poll_f;
         poll_f.fd = timer;
         poll_f.events = POLLIN;

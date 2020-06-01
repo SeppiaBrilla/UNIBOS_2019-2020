@@ -1,4 +1,5 @@
-/*
+int Inotify = inotify_init();
+  /*
 scrivere un programma para per lanciare parallelamente comandi
 
 para sleep 20 // ls -l // ps // sleep 3
