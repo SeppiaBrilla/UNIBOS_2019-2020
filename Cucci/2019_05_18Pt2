@@ -1,0 +1,120 @@
+Esercizio c.1: 
+Una fabbrica usa 16 tipi di componenti (es. ruota telaio scocca sellino catena ....).
+Ogni volta che occorre costruire un prodotto occorre prendere dal magazzino le parti necessarie, 
+
+e.g. per fare un go-kart occorre una scocca e 4 ruote, 
+     per fare una bicicletta un telaio, un sellino, 2 ruote e una catena.
+     
+Scopo dell'esercizio è di scrivere un monitor storage per la gestione del magazzino (un vettore di 16 interi).
+
+Ogni volta che un magazziere riceve un carico di componenti dal formitori chiama la funzione:
+    storage.add(components)
+dove components è un vettore di 16 elementi, indica quanti componenti di ogni tipo vengono aggiunti al magazzino.
+
+Quando un operaio deve costruire un prodotto chiama:
+    storage.get(components)
+dove components è un vettore di 16 elementi: indica quanti componenti di ogni tipo sono necessari per costruire il prodotto richiesto.
+
+Ovviamente se manca qualche componente occorre aspettare che i magazzinieri ricevano e mettano nel magazzino le parti mancanti.
+Le richieste degli operai devono essere soddisfatte in ordine FIFO.
+Ci possono essere casi di Deadlock? e di Starvation? perché?
+
+monitor storage:
+    int magazzino[16]
+    condition missingcomponents[16]
+
+    entry add(components):
+        for(i=0; < 16; i++):
+            if(components[i] > 0)
+                magazzino[i] += components[i]
+                components[i] = 0
+                missingcomponents[i].signal()
+
+    entry get(components):
+        for(i=0; < 16; i++):
+            if(components[i] > 0)
+                if(magazzino[i] - components[i] <= 0)
+                    missingcomponents[i].wait()
+                
+                magazzino[i] -= components[i]
+                components[i] = 0
+                if(magazzino[i] > 0)
+                    missingcomponents[i].signal()
+
+Esercizio c.2: 
+Una sezione-acritica-unificante (SAU) è una sequenza di istruzioni che può essere eseguita contemporaneamente da più processi, 
+ma i processi possono uscirne solo quanto tutti i processi che stanno eseguendo la SAU ne completano l'esecuzione.
+Ogni processo chiama:
+ SAU_enter()
+ ... codice SAU
+ SAU_exit()
+Scrivere le funzioni SAU_enter e SAU_exit mediante l'uso di semafori.
+
+process SAU:
+    semaphore_binary mutex(1)
+    semaphore_binary sem(0)
+    int enter, exit;
+
+    SAU_enter():
+        mutex.P()
+        enter++
+        mutex.V()
+    
+    SAU_exit():
+        exit++
+        mutex.P()
+        if(enter != exit)  
+            mutex.V()
+            sem.P()
+        while(exit>0):
+            enter--
+            exit--
+            mutex.V()
+            sem.V()
+
+Esercizio g.1: 
+In un sistema vengono eseguiti due tipi di processo, 
+    il tipo A richiede 3ms di calcolo e termina, 
+    il tipo B richiede 4ms di calcolo e poi termina. 
+
+Processi di tipo A vengono attivati ogni 6 ms (cioe' al tempo 0, 6, 12, 18, 24, 30...)
+mentre processi di tipo B ogni 8ms (al tempo 0, 8, 16, 24, 32, 40....). 
+
+Ogni processo di tipo A deve completare l'esecuzione prima che inizi il successivo dello stesso tipo, 
+e in modo equivalente ogni processo di tipo B deve terminare prima che venga eseguito il successivo.
+
+a) è possibile eseguire i processi con uno scheduler non-preemptive a priorità con i processi di tipo B a maggiore
+priorità di quelli del tipo A.
+
+  E     A B   A   B A     E     A B
+  012345678901234567890123456789012
+A 00001112220000333000044400000555
+B 11110000002222000333300004444
+
+a non è possibile
+
+b) è possibile eseguire i processi con uno scheduler non-preemptive a priorità con i processi di tipo A a maggiore
+priorità di quelli del tipo B
+
+  E     A B   A   B A     E     A B   A   B
+  01234567890123456789012345678901234567890123456789
+A 1110000222000033300004440555000066600007770000
+B 0001111000222200033330000000555500066660007777
+
+b è possibile
+
+c) è possibile eseguire i processi con uno scheduler round robin con timeslice 2ms? (il primo a partire potrebbe essere
+di tipo A o di tipo B).
+A
+  E     A B   A   B A     E     A B   A   B
+  01234567890123456789012345678901234567890123456789
+A 11001002200200330300440040055005
+B 00110110022022000033003304400440
+
+a non è possibile
+
+B
+  E     A B   A   B A     E     A B   A   B
+  01234567890123456789012345678901234567890123456789
+A 0011001200022
+B 110011000220022

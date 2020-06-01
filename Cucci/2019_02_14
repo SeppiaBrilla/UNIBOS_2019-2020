@@ -1,0 +1,86 @@
+Esercizio c.1: 
+Definiamo col nome di semaforo monobinario un semaforo 
+che può assumere solamente i valori zero e uno.
+Come un semaforo binario ordinario una operazione monoP 
+quando il semaforo ha valore zero deve bloccare il processo chiamante, 
+altrimenti porta il valore del semaforo da 1 a 0. 
+Quando il valore del semaforo è zero, una operazione monoV sblocca il primo processo bloccato,
+se ve ne sono, altrimenti porta il valore da 0 a 1.
+Una operazione monoV su un semaforo monobinario che ha valore 1 non produce alcun effetto. 
+Scrivere il monitor monobinarysem che implementi i metodi monoP e monoV.
+
+monitor monobinarysem:
+    condition ok2go
+    int value
+    queue Q
+
+    entry monoP():
+        if(value):
+            value = 0
+        else
+            ok2go.wait()
+    
+    entry monoV():
+        if(value):
+            ok2go.signal()
+            value = 1
+
+
+
+
+Esercizio c.2: 
+Sia dato un servizio di message passing asincrono. 
+Senza fare uso di processi server implementare un servizio di message passing 
+parzialmente sincrono 
+(nel quale l'operazione pssend blocchi il chiamante 
+fino ad avvenuta ricezione del messaggio 
+e la operazione psreceive non sia bloccante, 
+quindi deve ritornare immediatamente "None" 
+se non è stato ricevuto alcun messaggio corrispondente alle richieste).
+
+pssend:
+    src = GETPID()
+    asend((src,msg),dst)
+    do:
+        asend("",src)
+        (src,ACK) = arecieve(*)
+    while(src != dst)
+    return ACK
+
+psreceive:
+    srv = GETPID()
+    while(1):
+        (src,msg) = arecieve(*)
+        if(msg)
+            return NONE
+        else
+            asend(ACK, src)
+
+
+        
+
+Esercizio g.1: 
+In un sistema monoprocessore mostrare un caso nel quale 
+l'algoritmo di scheduling FIFO e quello Round Robin 
+producano la stessa sequenza di esecuzione 
+(per evitare casi banali si richiede che siano presenti almeno 3 processi 
+e ognuno faccia almeno due operazioni di I/O).
+
+FIFO:
+   a b  c  a b  c  
+   012354678901234567890123456789
+p1 1100000011000000
+p2 0011100000111000
+p3 0000011100000111
+
+Round-Robin:
+   a  b  c  a
+   01234567890123456789
+p1 1100001100001100000
+p2 00110000100000110001
+p3 000011000100000011001
+
+p1 2+4
+p2 3+3
+p3 3+2
+ms 2
