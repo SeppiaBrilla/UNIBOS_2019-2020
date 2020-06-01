@@ -1,0 +1,71 @@
+scrivere un monitor nvie che gestisca N buffer limitati. Ogni buffer ha l'ampiezza di NELEM elementi. 
+I produttori chiamano laprocedure entry:put(int n, generic object)
+mentre i consumatori chiamano la procedure entry:get(generic *object)
+I produttori conferiscono un elemento al buffer indicato come primo parametro. 
+Il secondo parametro e' il valore conferito.
+Per esempio put(3, elem), inserisce un elemento nel buffer numero 3.
+I consumatori ricevono un vettore di oggetti, al massimo uno per buffer. 
+Devono essere presenti elementi da leggere in almeno N/2 buffer perche'la chiamata abbia successo 
+(negli elementi relativi a buffer vuoti la chiamata restituisce il valore NONE).
+
+consegna incomprensibile
+davoli merdaù
+
+10 punti a grifondoro 
+
+
+c2.
+
+shared val = ;    ---1---2---3---6---12
+                  ---0---1---2---3---6
+                  ---0---0---1---2---3
+
+shared Semaphore sp = new Semaphore(1);  ---0---1-0 
+shared Semaphore sq = new Semaphore(2); ---3---2---3---
+shared Semaphore mutex = new Semaphore(1);
+
+
+process P {
+ int kp = 2;
+ while (kp > 0) {
+ sp.P();
+ mutex.P();
+ val = val+1;
+ sq.V();
+ mutex.V();
+ kp--;
+ }
+}
+
+process Q {
+ int kq = 3;
+ while (kq > 0) {
+ sq.P();
+ mutex.P();
+ val = val*2;
+ sp.V();
+ mutex.V();
+ kq--;
+ }
+}
+
+a) Al termine di questo programma, quali sono i valori possibili della variabile condivisa val?
+b) E' possibile che i processi P o Q restino bloccati indefinitamente?
+
+
+
+g1.
+Siano dati i processi P1, P2 e P3 in ordine descrescente di priorita' (P1 ha massima priorita' e P3 minima).
+
+P1: CPU 2ms, I/O 2ms, CPU 2ms, I/O 2ms, CPU 2ms
+P2: CPU 3ms, I/O 2ms, CPU 3ms, I/O 2ms, CPU 3ms
+P3: CPU 1ms, I/O 2ms, CPU 1ms, I/O 2ms, CPU 1ms
+
+I tre processi usano unita' indipendenti per l'I/O (non c'e' contesa per l'I/O) Si calcoli il diagramma di Gannt (descrivendo il procedimento) per uno 
+scheduler a priorita' di tipo preemptive e lo si confronti con uno scheduler a priorita' di tipo non preemptive. 
+chi è Ganntt?
+
+g2.
+a) quali sono le differenze fra la paginazione e la segmentazione nella gestione della memoria?
+b) quali sono le differenze fra le operazioni P e V dei semafori e le operazioni wait/signal delle variabili di condizione?
+c) allocazione contigua, concatenata e indicizzata nei file system, quali sono le differenze e i campi di applicazione?

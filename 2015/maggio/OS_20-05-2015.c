@@ -1,7 +1,7 @@
 /*
 Scrivere un programma catsig che copi lo standard input nello standard output (come il comando cat senzaparametri, per intenderci) 
 e che stampi la scritta “ho ricevuto un segnale” quando riceve un segnale SIGUSR1.
-La particolarita' di questo programma e' che per la gestione dei segnali deve usare la chiamata di sistemasignalfd (e non la signal o la sigaction)
+La particolarita' di questo programma e' che per la gestione dei segnali deve usare la chiamata di sistema signalfd (e non la signal o la sigaction)
 */
 #include <sys/signalfd.h>
 #include <signal.h>

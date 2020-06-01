@@ -1,0 +1,92 @@
+scrivere il monitor rendezvous che consente ai processi di sincronizzarsi e scambiare dati.
+Ogni processo chiama la procedure entry rendezvous.sync specificando due parametri: il numero dei processi con i quali il processo corrente vuole 
+sincronizzarsi e un vettore di ugual numero di interi. 
+Il primo elemento e' inizializzato con il valore conferito dal processo chiamante.
+I processi devono coordinarsi con altri che abbiano chiesto di sincronizzarsi con un ugual numero di processi. 
+Quindi, se e quando Nprocessi hanno chiamato la  rendezvous.sync chiedendo la sincronizzazione con N processi, tutti N vengono riattivati. 
+Il vettorepassato come secondo parametro deve contenere i valori conferiti dagli N processi, uno in ogni elemento del vettore, seguendo
+l'ordine di chiamata della  rendezvous.sync.
+
+es. 
+P1: int v1[]={42,0,0};  rendezvous.sync(3,v1) .... P1 si blocca....
+P2: int v[]={314,0,0}; rendezvous.sync(3,v) .... P2 si blocca....
+P3: int vv[]={1,0}; rendezvous.sync(2,vv) .... P3 si blocca....
+P4: int q[]={13,0,0}; rendezvous.sync(3,q) ... P4 sblocca anche P1 e P2. 
+
+Il secondo paramentro per tutti e tre avra' valore [42,314,13]....P3 si sblocchera' se e quando un altro processo chiamera'  
+rendezvous.sync con primo parametro 2.
+
+struct proc:
+    int n 
+    int MAX
+    elem v[]
+    cond stap
+
+proc processes[]
+
+entry sync(n, v[])
+    int add = 0
+    for process in processes:
+        if process.MAX == n:
+            break
+        add++
+
+    
+    processes[add].n += 1
+    processes[add].v.push(v[0])
+    if(processes[add].n==processes[add].MAX)
+        for processes[add].n times
+            processes[add].stap.signal()
+    else
+        processes[add].stap.wait()
+
+    v = processes[add].stap.v.copy()
+
+
+
+Usando semafori implementare un emulatore di un servizio di message passing asincrono.
+Occorre quindi implementare le primitive:
+void asend(msg m, pid_t dst)
+msg arecv(pid_t sender)
+facendo uso di semafori (generali, fifo).
+(e' presente una chiamata getpid() che fornisce il pid del chiamante). 
+La asend riceve da un mittente specificato (non e' richiesta la gestione della ricezione da qualunque processo).
+
+
+
+    
+    msg[][]
+
+
+    string msg
+    arecv(){
+        sem.P()
+        return msg
+
+        if()
+    }
+    asend(type messs){
+        msg=messs
+        sem.V()
+    }
+
+
+
+Scrivere uno stato per un algoritmo per l'algoritmo del banchiere a tre valute in modo tale che lo stato non sia safe 
+ma se si considerassero solamente due valute alla volta lo stato sarebbe safe.
+
+saldo = 2 2 2
+
+a(0 2 0) b(0 0 2) c(2 0 0)
+
+    v1  v2  v3
+a   4    2   2
+
+b   2    4   2
+
+c   2    2   4
+
+
+a) confrontare gli algoritmi di scheduling Shortest Job Next (SJN) e Round Robin. Quali sono i casi di applicazione dell'uno e dell'altro?
+b) quali operazioni compie un file system basato su i-node (per esempio ext2, minix o bffs) quando l'utente digita il comando:ln /etc/passwd /tmp?
+c) quale supporto hardware e' necessario per implementare un algoritmo di rimpiazzamento LRU?
