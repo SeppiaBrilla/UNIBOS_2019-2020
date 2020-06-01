@@ -1,0 +1,33 @@
+scrivere il monitor mMbb che realizzi un meccanismo di un minmax bounded buffer.
+Dopo le prime MIN operazioni di scrittura, un minmax bounded buffer deve sempre avere almeno MIN elementi e mai piu' di MAX
+elementi (e' quindi limitato sia nell'ampiezza massima, sia nell'ampiezza minima).
+Le funzioni (procedure entry) read e write del minmax bounded buffer hanno gli stessi argomenti e valori di ritorno di quelle delproducer/consumer o del 
+bounded buffer ordinario. 
+
+buffer = []
+
+entry void write(element):
+    if len(buffer) >= MAX:
+        ok2w.wait()
+
+    buffer.append(element)
+    if len(buffer) > MIN:
+        ok2r.signal()
+    
+
+entry general_type read():
+    if len(buffer) <= MIN:
+        ok2r.wait()
+
+    element = buffer.pop()
+
+    if len(buffer) < MAX:
+        ok2w.signal()
+
+    return element
+
+
+Facendo uso di semafori scrivere la funzione rendezvous che consenta ai processi di sincronizzarsi secondo le seguenti specifiche:
+–Ogni processo indica come parametro della funzione rendezvous con quanti altri processi vuole sincronizzarsi.
+–M processi che chiamano la  rendezvous con parametro N rimangono bloccati se M<N.
+–Quando l'N-mo processo richiama la rendezvous specificando N come parametro, lui e gli N-1 sospesi devono proseguire nelle propria esecuzione
