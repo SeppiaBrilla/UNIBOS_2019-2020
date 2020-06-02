@@ -31,3 +31,41 @@ Facendo uso di semafori scrivere la funzione rendezvous che consenta ai processi
 –Ogni processo indica come parametro della funzione rendezvous con quanti altri processi vuole sincronizzarsi.
 –M processi che chiamano la  rendezvous con parametro N rimangono bloccati se M<N.
 –Quando l'N-mo processo richiama la rendezvous specificando N come parametro, lui e gli N-1 sospesi devono proseguire nelle propria esecuzione
+
+dict = {key = n, value = semaforo}
+
+    if processi_bloccati(dict[n]) < n 
+        bloccati
+    else:
+        sblocca tutti
+
+
+
+Siano dati una memoria con 4 frame {0,1,2,3} e un unico processo che usa 5 pagine {0,1,2,3,4} eseguito tramite memoria virtuale (con paginazione a richiesta) 
+su tale memoria.
+
+a- Usando l'algoritmo di rimpiazzamento LRU si costruisca la più corta stringa di riferimenti che inizi con 2,3,4,0 e che al termine abbia la pagina 0 nel 
+frame 0, la pagina 1 nel frame 1, la pagina 2 nel frame 2, la pagina 3 nel frame 3, o si dimostri che tale stringa non esiste.
+
+b- Usando l'algoritmo di rimpiazzamento FIFO si costruisca la più corta stringa di riferimenti che inizi con 2,3,4,0 e che al termine abbia la pagina 0 nel 
+frame 0, la pagina 1 nel frame 1, la pagina 2 nel frame 2, la pagina 3 nel frame 3, o si dimostri che tale stringa non esiste.c- Usando l'algoritmo di 
+rimpiazzamento FIFO si costruisca la più corta stringa di riferimenti che inizi con 2,3,4,0 e che al termine abbia la pagina 3 nel frame 0, la pagina 2 nel 
+frame 1, la pagina 1 nel frame 2, la pagina 0 nel frame 3, o si dimostri che tale stringa non esiste.
+         0
+      24012431430132 
+0   2 22222222220000                     0   
+1   3 33311111111111                     1   
+2   4 44444444444222                     2   
+3   0 00000033333333                     3   
+
+         012340123      
+0   2 222211110000                   0   
+1   3  33332222111                   1   
+2   4   4444333322                   2   
+3   0    000044443                   3   
+
+
+
+a) quale supporto hardware e' necessario per implementare un meccanismo di memoria virtuale tramite paginazione a richiesta? Perche'?
+b) quale supporto hardware e' necessario per l'impementazione di uno scheduler round robin? Perche'?
+c) quale supporto hardware e' necessario per implementare un algoritmo di rimpiazzamento LFU? Perche'?
