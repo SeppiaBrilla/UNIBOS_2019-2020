@@ -22,7 +22,7 @@ int main(int argc, char * argv[]){
     fclose(fp);
 
     if ( kill ( atoi(pid), SIGUSR1 ) == -1 )
-        perror ( "Failed to send the SIGUSR2 signal" );
+        perror ( "Failed to send the SIGUSR1 signal" );
 
     system(command);
 
