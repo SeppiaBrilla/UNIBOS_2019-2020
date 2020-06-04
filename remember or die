@@ -1,0 +1,59 @@
+C
+----READ FROM DIRECTORY
+
+    DIR *folder;
+    struct dirent *entry;
+    folder = opendir(".");
+    while( (entry=readdir(folder))){/*fai l'informatica*/}
+    closedir(folder);
+
+    stat()  ---> tutte le info sul file
+
+----PIPE
+    
+    int fd[2];
+
+    pipe(fd);
+
+    pid = fork();
+    if pid()
+        close(fd[0])
+        //informatica
+        write(fd[1],&variabile, sizeof(variabile))
+        close(fd[1])
+    else
+        close(fd[1])
+        //informatica
+        read(fd[0],&variabile, sizeof(variabile))
+        close(fd[0])
+
+----READFILE
+    char *line=NULL;
+    size_t size=0;
+    while(getline(&line, &size, file) !=-1)
+    free(line)
+    
+    char *fgets(line, 100 /*caratteri da  leggere*/, FILE *stream)
+
+----STRING
+    strtok(char *riga, separatore)
+    strtok(NULL, separatore) //legge di lì in avanti
+
+----TIME
+    utime   modifica tempo di accesso/modifica
+
+---PATH
+    char *realpath(const char *path, char *resolved_path);
+    symlink(const char *file, const char *linkname)
+
+PY
+
+----READ FROM DIRECTORY
+    for entry in os.scandir(dir):
+        entry.*
+
+
+----THREAD
+
+    x = threading.Thread(target=execute, args=(elem,))
+    x.start()
