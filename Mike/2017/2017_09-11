@@ -1,0 +1,67 @@
+Esercizio c.1: 
+Un semaforo intelligente controlla un incrocio al quale si può accedere da 4 direzioni N, E, S, W. 
+Un solo veicolo alla volta deve occupare l’area dell’incrocio. 
+Se sono presenti veicoli da tutte le direzioni, il semaforo fa avanzare ciclicamente un veicolo da ogni direzione (NESWNESWNESW…). 
+Se nessun veicolo è in attesa da una direzione, il turno viene saltato.
+Quella che segue è la porzione di di programma eseguita dai veicoli per passare attraverso l’incrocio:
+
+    crossing.enter(direction)
+        …critical section
+    crossing.exit(direction)
+
+Nonostante sia un semaforo, questo esercizio deve venir risolto coi monitor
+
+monitor crossing:
+    int queue[4] #waiting car for each direction
+    int dir #direction on which the semaphore is currently in
+    condition ok2go[4] 
+    bool passing #check if there is a car in the crossing
+
+    entry enter(direction):
+        if(dir != direction || !passing)
+            queue[direction]++
+            ok2go[direction].wait()
+            queue[direction]--
+
+        dir = direction
+        passing = true
+
+    entry exit(direction):
+        (dir++)%4
+        passing = false
+
+        for (int i= dir++; i < dir; (i++)%4):
+            if(queue[i] <= 0)
+                dir = (dir+1)%4
+            else 
+                ok2go[dir].signal()
+        
+Esercizio c.2: 
+Sia dato un meccanismo di message passing asincrono. 
+Un numero imprecisato di processi client possono spedire messaggi (stringhe testuali) a N processi server (server0, …, servern-1). 
+Quando un processo client vuole spedire un messaggio sceglie a caso uno dei server e lo spedisce ad esso. 
+Scopo dell'esercizio è di scrivere il codice dei processi server che garantiscano che:
+- tutti i processi server stampino tutti i messaggi ricevuti (indipendentemente dal server che l'ha ricevuto)
+- tutti i processi server stampino la stessa sequenza di messaggi.
+** L’esercizio deve essere svolto senza aggiungere ulteriori processi.
+
+shared dictionary(serversource : message)
+
+process server(N-1):
+    PersonalDictionary(source : message)
+    (src, msg) = ARECV(*)
+    if(dictionary[src] == msg)
+        if(PersonalDictionary[src] == msg)
+            return 0
+        else
+            print(msg)
+            PersonalDictionary[src].add(msg)
+    else
+        dictionary(serverN).add(msg)
+        for i in N:
+            asend(serverI, (serverN, msg))
+        print(msg)
+        PersonalDictionary[src].add(msg)
+
+
+

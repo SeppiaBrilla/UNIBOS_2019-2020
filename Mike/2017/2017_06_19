@@ -1,0 +1,59 @@
+Esercizio c.1:  Una gara di lancio del giavellotto prevede che tutti gli atleti in gara facciano tre tiri. Lancia un atleta alla volta seguendo
+                l’ordine numerico.
+
+Atleta: process 
+i=0..NATLETI-1:
+while giav.pronto(i)
+    // lancia
+    giav.lanciato(i);
+
+Giudice: process
+while (i=giav.lanciofatto()) >= 0:
+    m = misuralancio()
+    giav.registraechiama(i, m)
+v = giav.classifica().
+
+Il giudice di volta in volta attende in “lanciofatto” fino a quando il giocatore corrente non ha lanciato, misura la distanza del lancio e la
+registra, solo a quel punto il prossimo giocatore puo’ lanciare. Scrivere il monitor giav.
+
+monitor giav:
+    int lanciatore;
+    bool ProntoATirare, PuòTirare;
+    int TiriADisposizione;
+    int Tiri[0,...,NATLETI-1;0,...,2];
+    condition ok2T, ok2W;
+
+    entry void pronto(int i):
+        lanciatore = i;
+        ProntoATirare = true;
+        if(PuòTirare != true)
+            ok2T.Wait();
+
+    entry void lanciato(int i):
+        ProntoATirare = false;
+        ok2W.Signal();
+    
+    entry int lanciofatto():+
+        if(TiriADisposizione < 3):
+            TiriADisposizione++;
+            ok2T.Signal();          //1 Signal T
+            if(ProntoATirare != true)
+                ok2W.Wait();
+            return TiriADisposizione;
+        else
+            TiriADisposizione = 0;
+            return -1;
+
+
+    entry void registraechiama(int i, int m):
+        Tiri[lanciatore,i] = m;
+        PuòTirare = true;
+
+
+    entry void classifica():
+        //Yada Yada
+
+
+Testing: 5 lanciatori, 1 giudice
+L1.pronto(); //entra in ok2T.wait()
+G.lanciofatto() //

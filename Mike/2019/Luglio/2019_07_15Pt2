@@ -1,0 +1,89 @@
+Esercizio c.1: 
+Scopo di questo esercizio è di scrivere un monitor pairbuf che implementi un buffer illimitato ad accoppiamento. 
+
+Ogni processo che vuole scrivere un elemento nel buffer chiama la funzione di entrata:
+    void put(T x)
+mentre ogni processo che vuole leggere un elemento dal buffer chiama la funzione:
+    T get(void)
+
+Gli elementi devono essere consegnati in ordine FIFO. 
+Sia la get sia la put sono bloccanti. 
+
+Solo quando il numero degli scrittori che hanno chiamato la put è uguale a quello dei lettori che hanno chiamato la get tutti i processi in attesa vengono sbloccati.
+
+Quindi per esempio, se un solo scrittore ha chiamato la put, quando arriva un lettore entrambi vengono sbloccati, e il
+lettore riceverà il valore passato come parametro dallo scrittore. 
+
+Se vi fossero 10 lettori in attesa occorrono 10 scrittori perche' i 20 processi continuino l'esecuzione. 
+Chi ha chiamato la get per primo riceverà il dato passato dal primo chiamante della put e così via in ordine FIFO
+
+monitor pairbuf:
+    stack buffer
+    int nr, nw
+    condition ok2write, ok2read
+
+    entry void put(x):
+        nw++
+        buffer.push(x)
+        if(nr != nw)
+            ok2write.wait()
+        nw--
+        ok2read.signal()
+        
+
+    entry T get(void):
+        nr++
+
+        if(nw != nr)
+            ok2read.wait()
+
+        T value = queue.pop()
+        nr--
+        ok2write.signal()
+
+        return value
+
+
+
+Esercizio c.2:
+
+fun dilemma(x):
+    asend((getpid(), x, ""), serverproc)
+    return arecv(serverproc)
+
+serverproc: process
+    while True:
+        (pid, x, y) = arecv(None)
+        if x == "":
+            asend(y, pid)
+        else
+            asend((pid, x[1:], y + x[0]), getpid())
+
+Cosa calcola la funzione dilemma tramite il processo serverproc? Descrivere come avviene il calcolo.
+
+Se più processi chiamano la funzione dilemma in concorrenza il calcolo avviene in modo corretto? Perché?
+
+Note: asend/arecv sono le primitive di un sistema di message passing asincrono. La funzione asend ha due parametri: il
+messaggio da inviare e l'identità del processo destinatario. Il parametro della funzione arecv indica il mittente atteso,
+None indica che vengono accettati messaggi da ogni mittente. La funzione getpid restituisce l'identità del processo
+chiamante.
+
+Calcola la somma nel caso gli venga passato un array di inter oppure nel caso gli venga passata una stringa fa la somma del valore ASCCI dei caratteri passati
+
+
+Esercizio g.1: 
+Sia dato l'algoritmo di rimpiazzamento MINREF che sceglie come pagina vittima quella che compare meno volte nella stringa dei riferimenti dall'inizio dell'esecuzione.
+1a) mostrare una sequenza infinita nella quale MINREF si comporti come MIN. Mostrare come è stata costruita la sequenza.
+
+  122333444433332212223333444433332221
+1 11111144444444441111111144444444444
+2 02222222222222222222222222222222222
+3 00333333333333333333333333333333333
+
+1b) mostrare una sequenza infinita nella quale MINREF si comporti come FIFO. Mostrare come è stata costruita la sequenza.
+(NB le sequenze infinite devono generare infiniti page fault).
+  
+  12233344444111122223333344444
+1 11111144444444444443333333333
+2 02222222222111111111111144444
+3 03333333333333322222222222222

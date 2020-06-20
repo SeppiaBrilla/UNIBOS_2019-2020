@@ -1,0 +1,120 @@
+Esercizio c.1: 
+I baristi (tanti) prendono gli ordini (es. mezza pinta, 1 o 2 pinte) e riempiono i bicchieri. 
+Quando un fusto e' vuoto avvertono i magazzinieri che prendono un nuovo fusto che contiene più di cento pinte e lo sostituiscono, 
+a questo punto il barista può completare il riempimento del bicchiere. 
+
+La vita di un barista del Delirium è:
+
+ while True:
+    (type, quantity) = get_order()
+    delirium.pour(type, quantity)
+
+La vita di un Magazziniere è:
+
+while True:
+    type = delirium.isempty()
+    capacity = change_keg(type)
+    delirium.loaded(type, capacity)
+
+Attenzione: 
+se il fusto (keg) è quasi vuoto il barista dovrà riempire parzialmente il bicchiere, occorrerà attivare il magazziniere che
+cambierà il fusto e poi il barista riempirà il bicchiere fino alla quantità richiesta dal cliente.
+Mentre un barista sta attendendo il cambiamento di un fusto altri baristi potrebbero ricevere ordini per lo stesso tipo di birra: gestire opportunamente questo caso.
+Scrivere il monitor Delirium.
+
+monitor delirium:
+    condition waitRefill[]
+    condition ok2load;
+    bool kegEmpty[]
+    int MAX = 100 #fusto capacità in pinte
+    int birre[] #birre disponibili
+
+    
+    entry pour(type, quantity)
+        if(birre[type] <= 0)
+            kegEmpty[type] = true
+            waitRefill[type].wait
+            ok2load.signal
+
+        if(birre[type] <= quantity)
+            quantity -= birre[type]
+            birre[type] = 0;
+            kegEmpty[type] = true
+            ok2load.signal()
+            waitRefill.wait()
+        
+        birre[type] -= quantity
+        quantity = 0;
+        waitRefill[type].signal()
+
+    entry isempty()
+        ok2load.wait()
+        do:
+            i++
+        while(!kegEmpty[i])
+        kegEmpty[i] = false;
+        return i
+
+    entry loaded(type, capacity)
+        birre[type] = capacity;
+        waitRefill[type].signal()
+
+Esercizio c.2: 
+Facendo uso di semafori, scrivere il codice di un servizio di buffer illimitato LIFO (con molteplici produttori e consumatori)
+
+ producer: process[1,...,N] 
+    while True: 
+    value = produce() 
+    lifobuf.push(value) 
+ 
+ consumer: process[1,...,M]
+    while True:
+    value = lifobuf.pop()
+    process(value)
+
+process lifobuf:
+    semaphore_binary mutex(1)
+    semaphore ok2read, ok2write
+    int nr, nw
+    stack t
+
+    void push(value)
+        nw++
+        if(nw > 0)
+            ok2write.P()
+        
+        t.push(value)
+        nw--
+        if(nr > 0)
+            ok2read.V()
+        else if(nw > 0)
+            ok2write.V()
+
+    value pop()
+        mutex.P()
+        nr++
+        if(nw > 0 || t.isEmpty())
+            ok2read.P()
+        
+        value v = t.pop(0)
+        
+        nr--
+        if(nw > 0)
+            mutex.V()
+            ok2write.V()
+        if(nr > 0)
+            mutex.V()
+            ok2read.V()
+        
+
+Esercizio g.1:
+A = 5ms + 4ms-i/o + 2ms
+B = 2ms + 4ms-i/o + 2ms
+C = 3ms + 3ms-i/o + 3ms
+D = 10ms + 1ms-i/o + 1ms
+
+RR - 3ms
+tm  01234567890123456
+CPU AAADDDDDDCCCDAA
+CPU BBCCCAABBDDD00D
+I/O 00BBBBCCCAAAAD0

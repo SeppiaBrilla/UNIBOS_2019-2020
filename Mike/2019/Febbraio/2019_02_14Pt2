@@ -1,0 +1,84 @@
+Esercizio c.1: 
+Definiamo col nome di semaforo monobinario un semaforo che può assumere solamente i valori zero e uno. 
+
+Come un semaforo binario ordinario una operazione monoP quando il semaforo ha valore zero deve bloccare il processo chiamante, 
+altrimenti porta il valore del semaforo da 1 a 0. 
+
+Quando il valore del semaforo è zero, una operazione monoV sblocca il primo processo bloccato, 
+se ve ne sono, altrimenti porta il valore da 0 a 1. 
+
+Una operazione monoV su un semaforo monobinario che ha valore 1 non produce alcun effetto. Scrivere il monitor monobinarysem che implementi i metodi monoP e monoV.
+
+monitor monobinarysem:
+    int value
+    conditon sem
+    int blocked
+
+    entry initsem(val):
+        value = val
+
+    entry monoP():
+        if(!value)
+            blocked++
+            sem.wait()
+        else
+            value = 0
+
+    entry monoV():
+        if(!value)
+            if(!blocked)
+                sem.signal()
+            else    
+                value = 1
+
+
+Esercizio c.2: 
+Sia dato un servizio di message passing asincrono. 
+
+Senza fare uso di processi server implementare un servizio di message passing parzialmente sincrono 
+(nel quale l'operazione pssend blocchi il chiamante fino ad avvenuta ricezione del messaggio 
+    e la operazione psreceive non sia bloccante, quindi deve ritornare immediatamente
+        "None" se non è stato ricevuto alcun messaggio corrispondente alle richieste).
+
+process pssend:
+    asend((src,msg), dst)
+    do:
+        (src, ACK) = arevc(*)
+    while(ACK != NULL)
+    return ACK;
+
+process psreceive:
+    (src, msg) = arevc(*)
+    if(msg != NULL)
+        asend(src, ACK)
+        return msg;
+    else
+        return None;
+
+
+Esercizio g.1: 
+In un sistema monoprocessore mostrare un caso nel quale l'algoritmo di scheduling FIFO e quello Round
+Robin producano la stessa sequenza di esecuzione 
+(per evitare casi banali si richiede che siano presenti almeno 3 processi e ognuno faccia almeno due operazioni di I/O).
+
+p1 = 2+3+2+3
+p2 = 1+2+1+2
+p3 = 2+4+2+4
+ms = 2
+R-R
+   012345678901234567890123456789
+p1 
+p2 
+p3 
+
+FIFO
+   012345678901234
+p1 11---22---00000
+p2 001--002--00000
+p3 00011----22----
+
+R-R
+   012345678901234
+p1 11---22---00000
+p2 001--002--00000
+p3 00011----22----

@@ -1,0 +1,140 @@
+Esercizio c.1: 
+    Scrivere il monitor di controllo per lo smistamento delle valigie all'aeroporto di Bologna. Un carrello viaggia su un
+    binario circolare. Il carrello si ferma ad una postazione dove vengono caricate le valigie e quindi in corrispondenza a più postazioni
+    dove vengono scaricate le valigie. Esiste una postazione corrispondente ad ogni aeroporto di destinazione.
+    Alla postazione di caricamento un addetto scansiona dal codice a barre l'aeroporto di destinazione e il nome del proprietario della
+    valigia.
+    Il codice dei processi coinvolti nel problema è il seguente:
+
+int airport_codes = [BLQ, CDG, BRX, LGW, FCO, ....] #l'elemento 0, BLQ (codice di Bologna) corrisponde alla stazione di caricamento
+
+cart: process
+    while True:
+        for code in airport_codes:
+            dispatch.cartat(code) # il carrello è alla postazione code
+
+loadingstation: process
+    while True:
+        dstcode,owner = read_barcode()
+        dispatch.load(dstcode, owner) #carica la valigia del viaggiatore owner diretto a dstcode
+
+station, for dstcode in airport_codes[1:]: process
+    while True:
+        owner = dispatch.unload(dstcode) #scarica dal carrello la valigia dell'utente owner
+        process_luggage(ownder, dstcode)
+
+Condizioni da rispettare: il carrello trasporta MAX valigie, 
+alla stazione di caricamento il carrello si ferma fino al riempimento completo del carrello, 
+alle altre stazioni deve sostare fino a quando tutte le valigie per la destinazione sono state scaricate.
+
+
+
+monitor dispatch:
+    condition ok2load
+    conditio ok2unload[MAX]
+    condition ok2go
+    int MAX #valigie MAX nel carrello
+    int n #valigie attualmente nel carrello
+    int posizione;
+    int carrello[MAX]
+    int airport_codes[];
+    dictionary valigieCaricate{airport_codes, name}
+
+    entry.cartat(code):
+        if ((code == 0 && n < MAX) || !valigieCaricate[airport_codes].isEmpty())
+            ok2go.wait() #attende il caricamento o lo scaricamento
+        
+        posizione = code;
+
+        if(!valigieCaricate[airport_codes].isEmpty())
+            ok2unload[airport_codes].signal()
+
+        if(valigeDaCaricare[airport_codes].isEmpty)
+            n = 0;
+            ok2load.signal()
+
+
+    entry.load(owner,dstcode):
+        if(posizione != 0 || n == MAX)
+            ok2load.wait()
+        
+        n += 1
+        valigieCaricate[airport_codes].push = {name}
+
+        if(n == MAX)
+            ok2go.signal()
+        else
+            ok2load.signal()
+
+
+    entry.unload(dstcode):
+        if(posizione != dstcode)
+            ok2unload.wait()
+
+        name = valigieCaricate[dstcode].pop()
+        
+        if(!valigieCaricate[dstcode].isEmpty() || n <= 0)
+            ok2unload.signal()
+        else
+            ok2go.signal
+
+        return name;
+
+
+Esercizio c.2: 
+Dato un servizio di message passing asincrono, implementare un nuovo servizio di message passing sincrono e LIFO.
+Il ricevente deve svuotare la coda dei messaggi in attesa di essere ricevuti e consegnare al chiamante l'ultimo messaggio arrivato non
+prima però di aver inviato un messaggio di conferma per sbloccare il mittente.
+Nessun messaggio deve essere perduto.
+
+process ssend:
+    pid = GETPID()
+    asend(dst, (pid, msg))
+    do
+        (snd,msg) = arecv(*)
+    while(msg == ACK)
+    (snd, msg) = arecv(*)
+    return msg;
+
+process srecieve:
+    stack st
+
+    do
+        asend(src)
+        (dst, msg) = arecv(*)
+    while(msg != NULL)
+
+    st.push(msg);
+    asend(dst, (src, ACK))
+
+    if(obj = st.pop(0))
+        asend(dst, (src, obj))
+    
+
+    
+Esercizio g.1: Sia dato questo programma:
+ Program P:
+    for (i=0;i<2;i++) {
+        long_compute();
+        io();
+    }
+    short_compute();
+1) long compute impiega 5 ms, 
+2) io impiega 5 ms. 
+3) short compute 2 ms 
+Il programma usa un device condiviso gestito in modalità FIFO.
+Considerando in un sistema di elaborazione monoprocessore dove sono in esecuzione tre istanze del programma P che sono state
+attivate ai tempi 0, 4ms e 7ms e che il sistema usa uno scheduler round robin per l'accesso alla CPU disegnare il diagramma di Gannt
+dell'esecuzione e spiegarne i passaggi. (time slice=3 ms)
+
+p = 5ms + I/O-5ms + 5ms + I/O-5ms + 2ms
+ts = 3ms
+
+    1   2  3
+    0123456789012345678901234567890123456789
+p1| 1110112222201110000112222200330000000000
+p2| 0000001110000001122222111000112222233000
+p3| 0000000001110000011222220111001122222330
+
+
+

@@ -1,0 +1,116 @@
+Esercizio c.1: 
+L'incrocio fra una strada e un canale è regolato da un ponte mobile. 
+Ovviamente le auto possono attraversare il ponte solo se è abbassato e si può alzare il ponte se non ci sono auto che lo stanno attraversando. 
+Il ponte deve essere alzato per far passare le imbarcazioni.
+Il canale in corrispondenza del ponte ha una larghezza che consente il passaggio contemporaneo di due imbarcazioni, 
+una per ogni senso di percorrenza, il ponte ha la portata massima di MAXCAR autoveicoli.
+
+Le auto per attraversare il ponte usano il seguente protocollo:
+ bridge.car_enter(direction)
+ ... attraversa il ponte
+ bridge.car_exit(direction)
+
+Le imbarcazioni usano il protocollo:
+ bridge.boat_enter(direction)
+ ... passa sotto al ponte
+ bridge.boat_exit(direction)
+
+dove direction vale 0 o 1 per riconoscere le due diverse direzioni delle auto o delle imbarcazioni. Occorre scrivere la soluzione in modo da evitare casi di starvation.
+
+
+monitor bridge:
+    int MAXCAR #massime macchine sul ponte
+    int nCar #macchine attualmente sul ponte
+    bool bridge_up #identifica lo stato del ponte
+    condition ok2driveOn
+    condition ok2driveUnder
+    int wCar #waiting Car
+    int wBoat #waiting Boat
+    int nBoat[direction]
+
+    entry car_enter(direction):
+        if(nCar >= (MAXCAR/2) || bridge_up || wBoat > 0)
+            wCar++
+            ok2driveOn.wait()
+            wCar--
+
+        nCar++
+
+    entry car_exit(direction):
+        nCar--
+
+        if(nCar <= 0 && wBoat > 0)
+            bridge_up = true
+            ok2driveUnder.signal()
+        else
+            ok2driveOn.signal()
+
+    entry boat_enter(direction):
+        if(nBoat[direction] > 0 || !bridge_up || nCar > 0)
+            wBoat++
+            ok2driveUnder.wait()
+            wBoat--
+        
+        nBoat[direction]++
+        
+    entry boat_exit(direction):
+        nBoat[direction]--
+        
+        if(nBoat[direction] <= 0 && nBoat[1-direction] <= 0 && wCar > 0)
+            bridge_up = false;
+            ok2driveOn.signal()
+        else
+            ok2driveUnder.signal()
+
+
+
+Esercizio c.2: 
+Sia dato un meccanismo di message passing asincrono. 
+Un numero imprecisato di processi client possono spedire messaggi (stringhe testuali) a N processi server (server0, …, servern-1). 
+Quando un processo client vuole stampare un messaggio sceglie a caso uno dei server e lo spedisce ad esso. 
+Scopo dell'esercizio è di scrivere il codice dei processi server che garantiscano
+che ogni processo stampi i messaggi da esso ricevuti ma se un client spedisce lo stesso messaggio (allo stesso server o a due server
+diversi) il messaggio deve risultare stampato una sola volta da uno solo dei server che l'hanno ricevuto.
+L’esercizio deve essere svolto senza aggiungere ulteriori processi.
+
+process aserver[i]:
+    dictionary MSG {src:msg}
+    while(1):
+
+        asend(aserver[i])
+        (src, msg, ACK) = arecv(*)
+
+        if(ACK == NULL && src != aserver[i]):
+            MSG[src].push(msg)
+            for(j < n)
+                asend(aserver[i], (i, msg, ACK))
+        else if(MSG[src] == msg && src > i):
+                asend(src, (i,0, DLT)
+
+        if(ACK == DLT && src != aserver[i]):
+            MSG[src].pop(msg)
+        else
+            print(msg)
+
+
+Esercizio g.1:
+Considerare i seguenti processi gestiti mediante uno scheduler round robin con timeslice di 4ms su una macchina SMP:
+    Valuta A: COH=x       Valuta B: COH=y
+p1: credito=6 assegnati=4 credito=8 assegnati=5
+p2: credito=6 assegnati=3 credito=3 assegnati=3
+p3: credito=6 assegnati=2 credito=8 assegnati=4
+
+(x,y)
+    C   A   R  
+p3. 68  24  44
+p2. 63  33  30  
+p1. 68  45  23 
+
+p1->p2->p3 2/3 -> 6/8 -> 9/11 -> 11/15 SAFE
+p1->p3->p2 2/3 -> 6/8 -> 8/12 -> 11/15 SAFE
+p2->p1->p3 3/0 -> 6/3 -> 10/8 -> 12/12 SAFE
+p2->p3->p1 3/0 -> 6/3 -> UNSAFE
+p3->p1->p2 4/4 -> 6/8 -> 10/13 -> 13/16 SAFE
+p3->p2->p1 4/4 -> 6/8 -> 9/11 -> 13/16 SAFE
+
+Denotare l'insieme di tutti I valori (x, y) per i quali lo stato sopra indicato risulta safe.

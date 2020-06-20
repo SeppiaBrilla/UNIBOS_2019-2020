@@ -1,0 +1,79 @@
+Esercizio c.1: 
+Un semaforo pesato è una struttura di sincronizzazione con due primitive P(w) e V(w) (oltre al costruttore di inizializzazione). 
+I parametri delle operazioni P e V sono i pesi dell'operazione. 
+
+L'invariante dei semafori pesati richiede che la somma dei pesi delle operazioni P completate sia sempre inferiore o uguale alla somma dei pesi delle
+operazioni V completate più il valore di inizializzazione. 
+
+Scrivere il monitor wsem in grado di implementare un semaforo pesato fair: 
+i processi che si bloccano a causa di una P che invaliderebbe l'invariante devono essere riattivati nell'ordine in cui sono stati sospesi (FIFO).
+
+monitor wsem:
+    int wP, wV
+    condition sem
+    int init
+
+    entry init(value):
+        self.init = value
+
+    entry P(peso):
+        if(wp+peso > wV+init)
+            sem.wait()
+        wp += peso
+
+    entry V(peso):
+        if(wV+peso < wP)
+            sem.signal()
+        wV += peso
+
+Esercizio c.2: 
+Dato un servizio di message passing asincrono e senza fare uso di processi server:
+a) implementare un servizio di message passing sincrono a ricezione multipla. Questo servizio prevede due funzioni con la seguente interfaccia:
+
+    ms_send(pid dest, msg_t msg)
+    ms_recv(int n, pid *senders, msg_t *msgs)
+
+L'operazione di ricezione deve attendere n messaggi, provenienti dai mittenti indicati nel vettore senders (ogni elemento può essere ANY/*) 
+e metterli ordinatamente nel vettore msgs (entrambi i vettori saranno stati opportunamente allocati e dimensionati dal chiamante). 
+I processi mittenti degli n messaggi devono rimanere in attesa fino a che la ms_recv non può essere completata.
+
+process ms_send(dest, msg):
+    asend((getpid(), msg), dest)
+    do:
+        (ack)=arecv(dest)
+    while(ack != NULL)
+
+process ms_recv(n, senders, msgs):
+    while(n>0):
+        (src, msg) = arecv(*)
+        for(int i = 0; i< len(senders); i++):
+            if(src == senders[i])
+                msgs[i] = msg
+                n--
+        asend()
+b) analizzare i casi di deadlock che possono accadere in base alla definizione del servizio di message passing sincrono
+a ricezione multipla.
+
+
+Esercizio g.1: 
+Si consideri l'algoritmo del banchiere a tre valute. 
+Si prenda in considerazione una situazione nella quale tre processi p1, p2, p3 
+abbiano un massimo credito disponibile rispettivamente di (3, 2, 3), (3, 3, 2), (2, 3, 3), 
+
+cioé per esempio p1 può prendere in prestito 3 unità della prima e della terza valuta ma solo 2 della seconda. 
+
+In un certo istante p1 ha 2 unità della prima valute, p2 ha 2 unità della seconda, p3 ha 3 unità della terza e nessuna altra risorsa è stata assegnata. 
+
+Qual è il capitale iniziale minimo che consente allo stato di essere safe? (considerare tutti i casi possibili)
+
+         
+p3  2 3 3    0 0 3   2 3 0
+p2  3 3 2    0 2 0   3 1 2
+p1  3 2 3    2 0 0   1 2 3
+
+p1->p2->p3  COH:123-> 323-> 343-> 346
+p1->p3->p2  COH:123-> 323-> UNSAFE su 2^a valuta
+p2->p1->p3  COH:312-> 332-> 532-> 535
+p2->p3->p1  COH:312-> 332-> 335-> 535
+p3->p1->p2  COH:230-> 233-> 433-> 453
+p3->p2->p1  COH:230-> 233-> UNSAFE su 1^a valuta
