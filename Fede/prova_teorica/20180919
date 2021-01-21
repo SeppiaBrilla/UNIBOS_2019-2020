@@ -1,0 +1,28 @@
+(Mattia Guazzaloca)
+c2)
+
+def ssend(msg,dest):
+    asend(msg,dest)
+    arecv(ACK,dest)
+
+//qua il trucco è che si mandi da solo un messaggio
+//per sbloccarsi, che arriva per ultimo
+def srecv(dest):
+    message = messageStack.get(dest)
+    while (1):
+        (msg, src) = arecv(ANY)
+        messageStack.push((msg, src))
+        asend(ACK, src)
+        if dest == ANY || src == dest:
+            break;
+    
+    if message != NULL:
+        return message
+    return messageStack.get(dest)
+
+tipo:
+
+asend(getpid(), TAG)
+
+while((msg = arecv(*)) != TAG):
+    data_struct.add(msg)

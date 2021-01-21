@@ -1,0 +1,98 @@
+c1)
+
+monitor giav{
+	int lanci[NATLETI] = 0
+	int punti[NATLETI] = 0
+	int current	= 0	//-1 se partita terminata, sennò è l'ultimo i che ha lanciato
+
+	condition turno[NATLETI]
+	condition fatto
+
+	entry pronto(i):
+		if lanci[i] >= 3
+			return 0
+
+		if current != i:
+			turno[i].wait()
+		return 1
+
+	entry lanciato(i):
+		lanci[i] += 1
+		fatto.signal()
+
+	entry lanciofatto():
+		if current == 0 && lanci[NATLETI-1] >= 3
+			return -1
+
+		if current == 0 && lanci[NATLETI-1] == lanci[0]:
+			fatto.wait()
+		elif: lanci[current-1] == lanci[current]:
+			fatto.wait()
+		return current
+
+	entry registraechiama(i,m):
+		punti[i] += m
+		if i == (NATLETI-1):
+			current = 0
+			turno[0].signal()
+		else:
+			current = i+1
+			turno[current].signal()
+
+	entry classifica():
+		return max(punti)
+}
+
+
+c2)
+Quali fra le seguenti funzioni possono essere usate al posto della test&set per realizzare un servizio di spinlock in un sistema nel quale la scrittura di una variabile globale non sia una funzione atomica?
+
+i) foo(a,b,c): <if (random(0,1)) {a=b; b=c} else {c=b; b=a}>  (random(0,1) genera a caso un valore 0 o 1)
+
+shared lock=0
+
+P,Q:
+	pv1=1,pv2=1
+	do:
+		foo(pv1,lock,pv2)
+	while(pv1 && pv2)
+	CS
+	lock=0
+	NOT CS
+
+sia lock=0, pv1,pv2=1
+1)pv1=0, lock=1 (rand=0)
+2)pv1=1, lock=1 (rand=0) | pv2=1, lock=1 (rand=1)
+3)pv1=1, lock=1 (rand=0) | pv2=1, lock=1 (rand=1)
+...
+1)pv2=0, lock=1 (rand=1)
+2)pv1=1, lock=1 (rand=0) | pv2=1, lock=1 (rand=1)
+3)pv1=1, lock=1 (rand=0) | pv2=1, lock=1 (rand=1)
+...
+bloccato finché lock non torna a 0 da assegnamento esterno
+
+
+ii) bar(a,b): <x=a & 1; a = (a >> 1) | b << 31; b = x>In tutte le funzioni i parametri sono passati per indirizzo.
+
+shared lock=1
+
+P,Q:
+	pv=0
+	do:
+		bar(lock,pv)
+	while(!pv)
+	CS
+	pv=1
+	bar(pv,lock)
+	NOT CS
+
+assumendo dato a 32 bit:
+
+sia lock=1, pv=0
+1)x=1, lock=0, pv=1
+2)x=0, lock=2^31, pv=0
+3)x=0, lock=0, pv=0
+4)x=0, lock=0, pv=0
+/bloccato/
+... se lock torna ad 1
+i)x=1, lock=0, pv=1

@@ -1,0 +1,29 @@
+(Mattia Guazzaloca, errato?)
+monitor allornone:
+    condition ok2read
+    condition ok2write
+    data = None
+    nr = 0
+
+    entry put(val):
+        if data != None:
+            ok2write.wait()
+        data = val
+        if nr == 0:
+            ok2write.wait()
+        ok2read.signal()
+        data = None
+        ok2write.signal()
+
+    entry get():
+        nr++
+        if data == None:
+            ok2read.wait()
+        val = data
+        nr--
+        if nr == 0:
+            ok2write.signal()
+        else:
+            ok2read.signal()
+        
+        return val

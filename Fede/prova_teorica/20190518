@@ -1,0 +1,81 @@
+(Paolo Marzolo)
+c1)
+
+monitor warehouse:
+    condition hasComponents;
+    Component storage[16];
+    queue processes;
+    
+    entry add(components[16]):
+        storage += components // vectorial op, like all others here
+        if (queue != empty) && (queue.top().components >= storage):
+            hasComponents.signal()
+        
+    entry get(components[16]):
+    	//per la fifo-ness
+        if queue != empty || components > storage:
+        	queue.add(self)
+            hasComponents.wait()
+            queue.dequeue()
+        storage -= components
+        queue.dequeue()
+        if (queue != empty) && (queue.top().components >= storage):
+            hasComponents.signal()
+
+
+c2)
+
+Semaphore s = new Semaphore(1)
+total = 0
+
+SAU_enter():
+	s.P()
+	inside++
+	s.V()
+
+SAU_exit():
+	s.P()
+	inside--
+	s.V()
+	while(1):
+		s.P()
+		if total == 0:
+			break
+		s.V()
+	s.V()
+
+
+ma...
+sia total = 0
+s.queue = [n(fermi al while), P(fermo ad enter), m(fermi al while)]
+tecnicamente gli n+m processi essendo total = 0 dovrebbero uscire tutti
+ma ne escono solo n
+
+(Paolo Marzolo)
+c2)
+
+class SAU:
+    def init():
+        binsem mutex(1)
+        int inside = 0; // contatore per processi dentro
+        int readyToExit = 0; // contatore per process pronti a uscire
+        sem blocked(0); // semaforo per processi bloccati in attesa di uscire
+    
+    def SAU_enter():
+        mutex.P()
+        inside++
+        mutex.V()
+
+    #(oggi)
+    def SAU_exit():
+        mutex.P()
+        readyToExit++
+        if inside != readyToExit:
+            mutex.V()
+            blocked.P()
+        inside--;
+        readyToExit--;
+        if readyToExit == 0:
+            mutex.V()
+        else:
+            blocked.V();

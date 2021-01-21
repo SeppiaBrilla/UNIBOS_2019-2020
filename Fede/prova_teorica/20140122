@@ -1,0 +1,49 @@
+C1)
+monitor BridgeController
+	int nW
+	int nE
+	condition okWest
+	condition okEast
+	
+	//char direction is either "W" or "E"
+	
+	procedure entry void enter(char direction)
+		if(direction == 'W')
+			if(nE != 0)
+				okWest.wait()
+			nW = nW + 1
+			okWest.signal()
+		if(direction == 'E')
+			if(nW != 0)
+				okEast.wait()
+			nE = nE + 1
+			okEast.signal()
+
+
+	procedure entry void exit(char direction)
+		if(direction == 'W')
+			nW = nW - 1
+			if(nE == 0)
+				okEast.signal()
+		if(direction == 'E')
+			nE = nE - 1
+			if(nW == 0)
+				okWest.signal()
+
+C2)
+int busy[]
+
+message msgxchange(pid_t pid, message msg)
+	busy[getpid()] = pid
+	while(busy[pid() != getpid())
+		/busy waiting/
+	asendx(pid, msg)
+	msg = arecvx(void)
+	return msg
+
+in questa implementazione si'.
+siano a,b,c processi
+a chiama msgxchange(b, msg)
+b chiama msgxchange(c, msg)
+c chiama msgxchange(a, msg)
+i 3 processi sono tutti e 3 in attesa e in deadlock.	
