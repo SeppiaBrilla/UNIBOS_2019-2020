@@ -1,0 +1,44 @@
+c2)
+
+*il trucco è far automandare un messaggio dalla psreceive()*
+
+pssend(msg, dest):
+	asend((self,msg),dest)
+	while(1):
+		snd,message = arcev(ANY)
+		if(message == ACK)
+			break
+		dadtastruct.add(snd,message)
+
+
+psreceive(sender):
+	dummy = Message(null)
+	asend(dummy,self) //self is my procid
+	while(1)
+		snd,message = arecv(ANY)
+		if(message == dummy):
+			break
+		datastruct.add(snd,message)
+	if(datastruct.match(sender)):
+		src,msg = datastruct.get(sender)
+		asend(ACK,sender)
+		return datasource.get(sender)
+	else:
+		return None
+
+
+g1)
+2ms time slice
+
+P 1ms CPU, 3ms I/O, 1ms CPU, 3ms I/O, 1ms CPU
+
+
+	012345678901234567890123456789
+
+P1	x   x        x
+P2	 x     x        x
+P3	  x       x        x
+IO	 111222333111222333
+
+quindi questo è un esempio di round robin che si comporta come fifo
+il trucco è fare durare abbastanza l'I/O

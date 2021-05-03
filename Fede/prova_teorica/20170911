@@ -1,0 +1,41 @@
+c1)
+(Dario Mylonopoulos)
+monitor crossing:
+    bool clear = true;
+    int num_waiting[4] = {0, 0, 0, 0};
+    condition ok2go[4];
+
+    entry void enter(dir d):
+        if(!clear)
+            num_waiting[d]++;
+            ok2go[d].wait();
+            num_waiting[d]--;
+        clear = false;
+    
+    entry void exit(dir d):
+        clear = true;
+        for(int i = 0; i < 4; i++)
+            dir next = (d + i + 1) % 4;
+            if(num_waiting[next] > 0)
+                ok2go[next].signal();
+                break;
+
+c2)
+MASTER=0
+
+server MASTER
+    while true:
+        msg = arecv(ANY);
+        for i = 1..n-1:
+            asend(i, msg);
+        print(msg);
+
+
+server 1..n-1
+    while true:
+        msg, sender = arecv(ANY);
+        if(sender == MASTER)
+            print(msg);
+        else
+            asend(MASTER, msg);
+            

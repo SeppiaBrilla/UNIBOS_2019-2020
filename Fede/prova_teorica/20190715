@@ -1,0 +1,27 @@
+(Paolo Marzolo)
+monitor unlimited_buffer:
+    int nw = 0, nr = 0;
+    queue buffer;
+    condition same_number;
+
+    entry void put(T x):
+        nw++;
+        buffer.enqueue(x);
+        
+        if nw != nr:
+            same_number.wait();
+            
+        same_number.signal();
+        nw--;
+
+    entry T get(void):
+        nr++;
+        if nw != nr: 
+            same_number.wait();
+        else:
+            same_number.signal();
+        
+        T val = buffer.dequeue();
+        same_number.signal();
+        nr--;
+        return val;

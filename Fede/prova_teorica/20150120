@@ -1,0 +1,73 @@
+c2)
+
+a)
+shared lock=1
+
+P,Q:
+	pv=0
+	do:
+		dualshift(lock,pv)
+	while(pv!=2^31)
+	CS
+	lock=1
+	NOT CS
+
+^^^
+assumendo 32bit:
+lock = 1
+pv = 0
+se lock=0 e pv ha un solo bit acceso, pv assume sempre valori diversi fino a diventare e restare 0.
+0)lock=1, pv=0 
+1)lock=0, pv=2^31 
+2)lock=0, pv=2^30
+...
+>32)lock=0, pv=0
+
+
+b non influenza il valore di a.
+dualshift(x,y)---->(0,0).
+vv
+eventualmente si azzerano e restano a 0 entrambi:
+ex: a=0110, b=0100 -> a=0011, b=0010 -> a=0001, b=1001 -> a=0000, b=1100 -> a=0000, b=0110.....
+
+
+b) Si consideri ora la funzione andor(a,b) che opera su due opera su due parametri di tipo booleano passati per indirizzo e cosi' definita:andor(a,b)=<c=a or b; b=a and b; a=c>Puo' la funzione andor essere usata al posto della test&set per la sincronizzazione fra processi? Dimostrare la risposta.
+
+shared lock=0/1
+
+P,Q:
+	pv=0/1
+	do:
+		andor(pv,lock)
+	while(pv)
+	CS
+	lock=0/1
+	NOT CS
+
+a=0,b=0
+1)c=0,b=0,a=0
+2)c=0,b=0,a=0
+...
+
+a=0,b=1
+1)c=1,b=0,a=1
+2)c=1,b=0,a=1
+...
+
+a=1,b=0
+1)c=1,b=0,a=1
+2)c=1,b=0,a=1
+...
+
+a=1,b=1
+1)c=1,b=1,a=1
+2)c=1,b=1,a=1
+...
+
+Ad ogni chiamata di andor(a,b):
+se a=b, i valori non cambiano
+se a!=b, a=1, b=0
+Per creare un meccanismo di spinlock servirebbe una funzione atomica che dato un lock
+di un certo valore sbloccante, permetta di portare contemporaneamente una variabile 
+pv da un valore di blocco ad un valore di sblocco e la lock ad un valore bloccante.
+Nessuna delle possibili combinazioni booleane di a e b permette di creare tale sistema.

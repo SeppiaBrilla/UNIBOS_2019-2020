@@ -1,0 +1,48 @@
+Esercizio c.1 2020.02.20
+
+Il monitor delay deve fornire tre procedure entry:
+
+boolean delay(unsigned int timeout)
+int count(void)
+void tick(void)
+
+La funzione tick viene richiamata ad ogni millisecondo. Un processo messo in attesa a causa di una delay attende per
+un numero di millisecondi (tick) indicato nel parametro.
+La procedure entry count deve restituire il numero di processi attualmente in attesa a causa di una delay.
+Scrivere delay.
+
+
+monitor delay {
+    int attesa = 0
+    list lista //lista delle strutture ds     
+    struct ds{//struttura dei processi che chiamano p.e. delay
+    Condition ok2go
+    Int time //timeout di ogni processo
+    }
+
+    procedure entry tick() {
+    for elem in lista { //per ogni elemento della lista
+        elem.time--
+        if (elem.time <= 0)
+        elem.ok2go.signal()
+        }
+    }
+
+     
+
+    procedure entry delay(int timeout){
+        s = new struct ds //crea una nuova struttura 
+        s.time = timeout //assegna timeout a time della struttura
+        lista.add(s) //aggiunge la struttura alla lista
+        s.ok2go.wait()
+        lista.delete(s)
+        free(s)
+    }
+
+     
+
+    procedure entry count(){
+        return lista.length()
+    }
+
+}

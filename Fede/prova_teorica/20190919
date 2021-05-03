@@ -1,0 +1,47 @@
+(Paolo Marzolo)
+c1)
+
+AIRPORT_CODES = [BLQ, CDG, BRX, LGW, FCO]
+
+class dispatch(monitor):
+    def __init__(self,MAX):
+        super().__init__()
+        self.MAX = MAX
+        self.n = 0
+        self.station = BLQ
+        self.waiting_to_load = condition(self)
+        self.waiting_to_leave = condition(self)
+        self.cart_items = {} # dizionario: a un codice di stazione corrisponde una lista di bagagli
+        self.waiting_to_unload = {} # dizionario: a un codice di stazione corrisponde una condition variable
+        
+    @entry
+    def cartat(self, dstcode):
+        station = dstcode
+        
+        if n < MAX:
+            waiting_to_leave.wait() # aspetta finché non è pieno <---
+            if cart_items[dstcode] != []:
+                waiting_to_unload[dstcode].signal()
+        elif station == BLQ:
+            n = 0
+            waiting_to_load.signal()
+
+    @entry
+    def load(self, dstcode, owner):
+        if n == MAX || station != BLQ:
+            waiting_to_load.wait() # aspetta che si liberi un posto e che il carrello torni a loading_station
+        cart_items[dstcode].append(owner)
+        n += 1
+        waiting_to_load.signal()
+        if n == MAX:
+            waiting_to_leave.signal()
+
+    
+    @entry
+    def unload(self, dstcode):
+        if self.station != dstcode:
+            self.waiting_to_unload[dstcode].wait() <---
+        owner = self.cart_items[dstcode].pop(0)
+        if self.cart_items[dstcode] != []:
+            self.waiting_to_unload[dstcode].signal() # passing the bâton
+        return owner

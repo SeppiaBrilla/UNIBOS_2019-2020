@@ -1,0 +1,65 @@
+c1)
+
+monitor rb{
+	int punt[2] = 0
+	int bandiera[2] = 0
+	int pronto[2] = 0
+	boolean started = 0		//1 quando chiama() ha dato il via
+	boolean finished = 0	//1 quando una squadra ha confermato il punto
+	list l = []
+
+	condition allready
+	condition start
+	condition finish
+
+	procedure entry nuovapartita():
+		punt = 0	//vettoriale
+		bandiera = 0
+
+	procedure entry chiama(lcall):
+		if pronto[0] + pronto[1] != 2MAX:
+			allready.wait()
+		l = lcall
+		finished = 0
+		started = 1
+		start.signal()
+		if !finished
+			finish.wait()
+		return punt
+		
+	procedure entry pronto(sq, n):
+		if puntA == 10 || puntB == 10:
+			return 1
+		pronto[sq] += 1
+		if pronto[0] + pronto[1] == 2MAX:
+			allready.signal()
+		if !started:
+			start.wait()
+		start.signal()	
+		return 0
+
+	procedure entry allabandiera(sq, n):
+		if n in l:
+			bandiera[sq] += 1
+			if bandiera[sq] == len(l) && !finished:
+				finished = 1
+				punt[sq] +=1
+				finish.signal()
+}
+
+#############################
+
+c2)
+
+lost_n_found():
+	dset_lost_n_found(getpid())
+	while(1):
+		(id,msg) = dmsgrecv()
+		dmsgsend(id,(id,msg)
+
+asend(pid_t dest, msg_t msg):
+	dmsgsend(dest, (dest,msg))
+
+msg_t arecv():
+	(id,msg) = dmsgrecv()
+	return msg
